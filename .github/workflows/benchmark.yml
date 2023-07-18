@@ -97,8 +97,8 @@ jobs:
 
       - name: Install classic theme
         run: |
-          (cd old && wp-env run tests-cli theme activate twentytwentyone)
-          (cd new && wp-env run tests-cli theme activate twentytwentyone)
+          (cd old && wp-env run tests-cli wp theme activate twentytwentyone)
+          (cd new && wp-env run tests-cli wp theme activate twentytwentyone)
 
       - name: Benchmark Web Vitals
         working-directory: wpp-research
