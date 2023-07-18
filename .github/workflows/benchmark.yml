@@ -1,0 +1,105 @@
+name: Benchmark
+
+on:
+  workflow_dispatch:
+    inputs:
+      old:
+        description: "Old version to compare"
+        type: string
+        default: "latest"
+        required: true
+      new:
+        description: "New version to compare"
+        type: string
+        default: "trunk"
+        required: true
+
+jobs:
+  benchmarks:
+    name: "Benchmarks"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          repository: GoogleChromeLabs/wpp-research
+          path: wpp-research
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: ".nvmrc"
+          cache: npm
+
+      - name: Install wp-env
+        run: npm -g i @wordpress/env
+
+      - name: Install wpp-research dependencies
+        working-directory: wpp-research
+        run: npm ci
+
+      - name: Configure WordPress versions
+        run: |
+          if [[ $OLD_VERSION != 'latest' ]]; then
+            echo "Old version: $OLD_VERSION"
+            echo "{\"core\":\"WordPress/WordPress#$OLD_VERSION\"}" >> .wp-env.override.json
+          fi
+
+          echo "New version: $NEW_VERSION"
+          echo "{\"core\":\"WordPress/WordPress#$NEW_VERSION\"}" >> .wp-env.override.json
+        env:
+          OLD_VERSION: ${{ inputs.old == 'trunk' && 'master' || inputs.old }}
+          NEW_VERSION: ${{ inputs.new == 'trunk' && 'master' || inputs.new }}
+
+      - name: Install WordPress
+        run: |
+          chmod -R 767 old/ # TODO: Possibly integrate in wp-env
+          chmod -R 767 new/ # TODO: Possibly integrate in wp-env
+          (cd old && wp-env start)
+          (cd new && wp-env start)
+
+      - name: Update permalink structure
+        run: |
+          (cd old && wp-env run tests-cli wp rewrite structure '/%postname%/' -- --hard)
+          (cd new && wp-env run tests-cli wp rewrite structure '/%postname%/' -- --hard)
+
+      - name: Import mock data
+        run: |
+          (cd old && wp-env run tests-cli curl https://raw.githubusercontent.com/WordPress/theme-test-data/b9752e0533a5acbb876951a8cbb5bcc69a56474c/themeunittestdata.wordpress.xml -- --output /tmp/themeunittestdata.wordpress.xml)
+          (cd old && wp-env run tests-cli wp import /tmp/themeunittestdata.wordpress.xml -- --authors=create)
+
+      - name: Install block theme
+        run: |
+          (cd old && wp-env run tests-cli theme activate twentytwentythree)
+          (cd new && wp-env run tests-cli theme activate twentytwentythree)
+
+      - name: Benchmark Web Vitals
+        working-directory: wpp-research
+        run:
+          npm run research -- benchmark-web-vitals -u http://localhost:8881/ -n 20 -p
+          npm run research -- benchmark-web-vitals -u http://localhost:8891/ -n 20 -p
+
+      - name: Benchmark Server-Timing
+        working-directory: wpp-research
+        run:
+          npm run research -- benchmark-server-timing -u http://localhost:8881/ -n 100 -p
+          npm run research -- benchmark-server-timing -u http://localhost:8891/ -n 100 -p
+
+      - name: Install classic theme
+        run: |
+          (cd old && wp-env run tests-cli theme activate twentytwentyone)
+          (cd new && wp-env run tests-cli theme activate twentytwentyone)
+      - name: Benchmark Web Vitals
+        working-directory: wpp-research
+        run:
+          npm run research -- benchmark-web-vitals -u http://localhost:8881/ -n 20 -p
+          npm run research -- benchmark-web-vitals -u http://localhost:8891/ -n 20 -p
+
+      - name: Benchmark Server-Timing
+        working-directory: wpp-research
+        run:
+          npm run research -- benchmark-server-timing -u http://localhost:8881/ -n 100 -p
+          npm run research -- benchmark-server-timing -u http://localhost:8891/ -n 100 -p
