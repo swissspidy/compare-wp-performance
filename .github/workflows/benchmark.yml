@@ -73,6 +73,11 @@ jobs:
           (cd new && wp-env run tests-cli curl https://raw.githubusercontent.com/WordPress/theme-test-data/b9752e0533a5acbb876951a8cbb5bcc69a56474c/themeunittestdata.wordpress.xml -- --output /tmp/themeunittestdata.wordpress.xml)
           (cd new && wp-env run tests-cli wp import /tmp/themeunittestdata.wordpress.xml -- --authors=create)
 
+      - name: Deactivate WordPress Importer
+        run: |
+          (cd old && wp-env run tests-cli plugin deactivate wordpress-importer)
+          (cd new && wp-env run tests-cli plugin deactivate wordpress-importer)
+
       - name: Install block theme
         run: |
           (cd old && wp-env run tests-cli theme activate twentytwentythree)
