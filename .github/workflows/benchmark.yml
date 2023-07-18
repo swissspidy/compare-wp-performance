@@ -85,13 +85,13 @@ jobs:
 
       - name: Benchmark Web Vitals
         working-directory: wpp-research
-        run:
+        run: |
           npm run research -- benchmark-web-vitals -u http://localhost:8881/ -n 20 -p
           npm run research -- benchmark-web-vitals -u http://localhost:8891/ -n 20 -p
 
       - name: Benchmark Server-Timing
         working-directory: wpp-research
-        run:
+        run: |
           npm run research -- benchmark-server-timing -u http://localhost:8881/ -n 100 -p
           npm run research -- benchmark-server-timing -u http://localhost:8891/ -n 100 -p
 
@@ -102,12 +102,12 @@ jobs:
 
       - name: Benchmark Web Vitals
         working-directory: wpp-research
-        run:
+        run: |
           npm run research -- benchmark-web-vitals -u http://localhost:8881/ -n 20 -p
           npm run research -- benchmark-web-vitals -u http://localhost:8891/ -n 20 -p
 
       - name: Benchmark Server-Timing
         working-directory: wpp-research
-        run:
+        run: |
           npm run research -- benchmark-server-timing -u http://localhost:8881/ -n 100 -p
           npm run research -- benchmark-server-timing -u http://localhost:8891/ -n 100 -p
