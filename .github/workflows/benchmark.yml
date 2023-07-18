@@ -75,13 +75,13 @@ jobs:
 
       - name: Deactivate WordPress Importer
         run: |
-          (cd old && wp-env run tests-cli plugin deactivate wordpress-importer)
-          (cd new && wp-env run tests-cli plugin deactivate wordpress-importer)
+          (cd old && wp-env run tests-cli wp plugin deactivate wordpress-importer)
+          (cd new && wp-env run tests-cli wp plugin deactivate wordpress-importer)
 
       - name: Install block theme
         run: |
-          (cd old && wp-env run tests-cli theme activate twentytwentythree)
-          (cd new && wp-env run tests-cli theme activate twentytwentythree)
+          (cd old && wp-env run tests-cli wp theme activate twentytwentythree)
+          (cd new && wp-env run tests-cli wp theme activate twentytwentythree)
 
       - name: Benchmark Web Vitals
         working-directory: wpp-research
