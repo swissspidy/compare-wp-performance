@@ -1,0 +1,27 @@
+{
+	"root": true,
+	"extends": ["plugin:@wordpress/eslint-plugin/recommended"],
+	"parserOptions": {
+		"requireConfigFile": false,
+		"babelOptions": {
+			"presets": ["@wordpress/babel-preset-default"]
+		},
+		"warnOnUnsupportedTypeScriptVersion": false
+	},
+	"rules": {
+		"import/no-unresolved": [
+			"error",
+			{
+				"ignore": ["^tablemark$"]
+			}
+		]
+	},
+	"overrides": [
+		{
+			"files": ["scripts/**/*.[jt]s"],
+			"rules": {
+				"no-console": "off"
+			}
+		}
+	]
+}

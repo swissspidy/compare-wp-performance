@@ -14,5 +14,14 @@
 	"homepage": "https://github.com/swissspidy/compare-wp-performance#readme",
 	"type": "module",
 	"devDependencies": {
+		"@wordpress/scripts": "^26.8.0"
+	},
+	"dependencies": {
+		"csvtojson": "^2.0.10",
+		"tablemark": "^3.0.0"
+	},
+	"scripts": {
+		"lint": "wp-scripts lint-js",
+		"format": "wp-scripts format"
 	}
 }

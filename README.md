@@ -10,6 +10,8 @@ this repository provides a [GitHub Action](https://github.com/features/actions) 
 
 This repository provides a GitHub Action to compare benchmarks of two separate WordPress versions.
 
+The results are posted as a [job summary](https://github.blog/2022-05-09-supercharging-github-actions-with-job-summaries/).
+
 By default, it compares the latest stable release with the current trunk version. You can choose different versions of course.
 
 ![Screenshot of the GitHub Actions UI to run the benchmark workflow](https://github.com/swissspidy/compare-wp-performance/assets/841956/b5cb4d93-6e51-458a-b25b-16bc17be8b3a)
