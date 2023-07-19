@@ -99,5 +99,6 @@ for ( const i in beforeStats ) {
 	} );
 }
 
-console.log( `${ title }\n` );
+console.log( `**${ title }**\n` );
 console.log( formatAsMarkdownTable( comparison ) );
+console.log();

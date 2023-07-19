@@ -100,6 +100,7 @@ jobs:
                   npm run research --silent  -- benchmark-server-timing -u http://localhost:8881/ -n 100 -p -o csv > before.csv
                   npm run research --silent  -- benchmark-server-timing -u http://localhost:8891/ -n 100 -p -o csv > after.csv
                   node ../scripts/results.js "Server-Timing (Block Theme)" before.csv after.csv > summary.md
+                  cat summary.md >> $GITHUB_STEP_SUMMARY
 
             - name: Install classic theme
               run: |
@@ -112,6 +113,7 @@ jobs:
                   npm run research --silent -- benchmark-web-vitals -u http://localhost:8881/ -n 20 -p > before.csv
                   npm run research --silent -- benchmark-web-vitals -u http://localhost:8891/ -n 20 -p > after.csv
                   node ../scripts/results.js "Web Vitals (Classic Theme)" before.csv after.csv > summary.md
+                  cat summary.md >> $GITHUB_STEP_SUMMARY
 
             - name: Benchmark Server-Timing
               working-directory: wpp-research
@@ -119,3 +121,4 @@ jobs:
                   npm run research --silent -- benchmark-server-timing -u http://localhost:8881/ -n 100 -p -o csv > before.csv
                   npm run research --silent -- benchmark-server-timing -u http://localhost:8891/ -n 100 -p -o csv > after.csv
                   node ../scripts/results.js "Server-Timing (Classic Theme)" before.csv after.csv > summary.md
+                  cat summary.md >> $GITHUB_STEP_SUMMARY
