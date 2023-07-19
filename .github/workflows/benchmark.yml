@@ -48,11 +48,11 @@ jobs:
               run: |
                   echo "Old version: $OLD_VERSION"
                   if [[ $OLD_VERSION != 'latest' ]]; then
-                    echo "{\"core\":\"WordPress/WordPress#$OLD_VERSION\"}" >> .wp-env.override.json
+                    echo "{\"core\":\"WordPress/WordPress#$OLD_VERSION\"}" >> old/.wp-env.override.json
                   fi
 
                   echo "New version: $NEW_VERSION"
-                  echo "{\"core\":\"WordPress/WordPress#$NEW_VERSION\"}" >> .wp-env.override.json
+                  echo "{\"core\":\"WordPress/WordPress#$NEW_VERSION\"}" >> new/.wp-env.override.json
               env:
                   OLD_VERSION: ${{ inputs.old == 'trunk' && 'master' || inputs.old }}
                   NEW_VERSION: ${{ inputs.new == 'trunk' && 'master' || inputs.new }}
