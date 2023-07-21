@@ -8,6 +8,24 @@ this repository provides a [GitHub Action](https://github.com/features/actions) 
 
 ## Usage
 
+### Manually
+
+Run the following command in the terminal:
+
+```shell
+./run.sh [old] [new]
+```
+
+By default, it compares the latest stable release with the current trunk version. You can choose different versions of course.
+
+To compare with the current RC:
+
+```shell
+./run.sh latest 6.3-branch
+```
+
+### Github Actions
+
 This repository provides a GitHub Action to compare benchmarks of two separate WordPress versions.
 
 The results are posted as a [job summary](https://github.blog/2022-05-09-supercharging-github-actions-with-job-summaries/).
