@@ -9,6 +9,7 @@ fi
 
 OLD_VERSION=${1-latest}
 NEW_VERSION=${2-trunk}
+SKIP_INIT=${2-false}
 
 # Configure WordPress versions
 
@@ -29,28 +30,36 @@ fi
 echo "New version: $NEW_VERSION"
 echo "{\"core\":\"WordPress/WordPress#$NEW_VERSION\"}" > new/.wp-env.override.json
 
-# Install WordPress
+if [[ $SKIP_INIT == 'false' ]]; then
 
-(cd old && npm i && npm run wp-env --silent start)
-(cd new && npm i && npm run wp-env --silent start)
+	# Install WordPress
 
-# Update permalink structure
+	(cd old && npm i && npm run wp-env --silent start)
+	(cd new && npm i && npm run wp-env --silent start)
 
-(cd old && npm run wp-env --silent run tests-cli wp rewrite structure '/%postname%/' -- --hard)
-(cd new && npm run wp-env --silent run tests-cli wp rewrite structure '/%postname%/' -- --hard)
+	# Update permalink structure
 
-# Import mock data
-# TODO: Skip if done before.
+	(cd old && npm run wp-env --silent run tests-cli wp rewrite structure '/%postname%/' -- --hard)
+	(cd new && npm run wp-env --silent run tests-cli wp rewrite structure '/%postname%/' -- --hard)
 
-(cd old && npm run wp-env --silent run tests-cli curl https://raw.githubusercontent.com/WordPress/theme-test-data/b9752e0533a5acbb876951a8cbb5bcc69a56474c/themeunittestdata.wordpress.xml -- --output /tmp/themeunittestdata.wordpress.xml)
-(cd old && npm run wp-env --silent run tests-cli wp import /tmp/themeunittestdata.wordpress.xml -- --authors=create)
-(cd new && npm run wp-env --silent run tests-cli curl https://raw.githubusercontent.com/WordPress/theme-test-data/b9752e0533a5acbb876951a8cbb5bcc69a56474c/themeunittestdata.wordpress.xml -- --output /tmp/themeunittestdata.wordpress.xml)
-(cd new && npm run wp-env --silent run tests-cli wp import /tmp/themeunittestdata.wordpress.xml -- --authors=create)
+	# Import mock data
 
-# Deactivate WordPress Importer
+	(cd old && npm run wp-env --silent run tests-cli curl https://raw.githubusercontent.com/WordPress/theme-test-data/b9752e0533a5acbb876951a8cbb5bcc69a56474c/themeunittestdata.wordpress.xml -- --output /tmp/themeunittestdata.wordpress.xml)
+	(cd old && npm run wp-env --silent run tests-cli wp import /tmp/themeunittestdata.wordpress.xml -- --authors=create)
+	(cd new && npm run wp-env --silent run tests-cli curl https://raw.githubusercontent.com/WordPress/theme-test-data/b9752e0533a5acbb876951a8cbb5bcc69a56474c/themeunittestdata.wordpress.xml -- --output /tmp/themeunittestdata.wordpress.xml)
+	(cd new && npm run wp-env --silent run tests-cli wp import /tmp/themeunittestdata.wordpress.xml -- --authors=create)
 
-(cd old && npm run wp-env --silent run tests-cli wp plugin deactivate wordpress-importer)
-(cd new && npm run wp-env --silent run tests-cli wp plugin deactivate wordpress-importer)
+	# Deactivate WordPress Importer
+
+	(cd old && npm run wp-env --silent run tests-cli wp plugin deactivate wordpress-importer)
+	(cd new && npm run wp-env --silent run tests-cli wp plugin deactivate wordpress-importer)
+
+else
+
+	(cd old && npm run wp-env --silent start)
+  (cd new && npm run wp-env --silent start)
+
+fi
 
 # Install block theme
 
@@ -90,3 +99,9 @@ node ../scripts/results.js "Web Vitals (Classic Theme)" before.csv after.csv
 npm run research --silent  -- benchmark-server-timing -u http://localhost:8881/ -n 100 -p -o csv > before.csv
 npm run research --silent  -- benchmark-server-timing -u http://localhost:8891/ -n 100 -p -o csv > after.csv
 node ../scripts/results.js "Server-Timing (Classic Theme)" before.csv after.csv
+
+# Shutdown sites again
+
+cd ../
+(cd old && npm run wp-env --silent stop)
+(cd new && npm run wp-env --silent stop)

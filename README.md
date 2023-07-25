@@ -13,18 +13,24 @@ this repository provides a [GitHub Action](https://github.com/features/actions) 
 Run the following command in the terminal:
 
 ```shell
-./run.sh [old] [new]
+./run.sh [old=latest] [new=trunk] [skip_init=false]
 ```
 
-By default, it compares the latest stable release with the current trunk version. You can choose different versions of course.
+By default, it compares the latest stable release with the current trunk version. So `./run.sh` is the same as `./run.sh latest trunk`.
 
-To compare with the current RC:
+You can choose different versions of course. For example, to compare with the current RC:
 
 ```shell
 ./run.sh latest 6.3-branch
 ```
 
-### Github Actions
+To skip the initialization steps when you want to run the benchmarks multiple times after another:
+
+```shell
+./run.sh latest trunk true
+```
+
+### GitHub Actions
 
 This repository provides a GitHub Action to compare benchmarks of two separate WordPress versions.
 
