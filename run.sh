@@ -1,10 +1,5 @@
 #!/usr/bin/env bash
 
-if ! command -v wp-env &> /dev/null; then
-    echo "wp-env not installed globally. Run \`npm i -g @wordpress/env\`"
-    exit
-fi
-
 # Install wpp-research if missing
 
 if [ ! -d "./wpp-research" ]; then
@@ -36,30 +31,31 @@ echo "{\"core\":\"WordPress/WordPress#$NEW_VERSION\"}" > new/.wp-env.override.js
 
 # Install WordPress
 
-(cd old && wp-env start)
-(cd new && wp-env start)
+(cd old && npm i && npm run wp-env --silent start)
+(cd new && npm i && npm run wp-env --silent start)
 
 # Update permalink structure
 
-(cd old && wp-env run tests-cli wp rewrite structure '/%postname%/' -- --hard)
-(cd new && wp-env run tests-cli wp rewrite structure '/%postname%/' -- --hard)
+(cd old && npm run wp-env --silent run tests-cli wp rewrite structure '/%postname%/' -- --hard)
+(cd new && npm run wp-env --silent run tests-cli wp rewrite structure '/%postname%/' -- --hard)
 
 # Import mock data
+# TODO: Skip if done before.
 
-(cd old && wp-env run tests-cli curl https://raw.githubusercontent.com/WordPress/theme-test-data/b9752e0533a5acbb876951a8cbb5bcc69a56474c/themeunittestdata.wordpress.xml -- --output /tmp/themeunittestdata.wordpress.xml)
-(cd old && wp-env run tests-cli wp import /tmp/themeunittestdata.wordpress.xml -- --authors=create)
-(cd new && wp-env run tests-cli curl https://raw.githubusercontent.com/WordPress/theme-test-data/b9752e0533a5acbb876951a8cbb5bcc69a56474c/themeunittestdata.wordpress.xml -- --output /tmp/themeunittestdata.wordpress.xml)
-(cd new && wp-env run tests-cli wp import /tmp/themeunittestdata.wordpress.xml -- --authors=create)
+(cd old && npm run wp-env --silent run tests-cli curl https://raw.githubusercontent.com/WordPress/theme-test-data/b9752e0533a5acbb876951a8cbb5bcc69a56474c/themeunittestdata.wordpress.xml -- --output /tmp/themeunittestdata.wordpress.xml)
+(cd old && npm run wp-env --silent run tests-cli wp import /tmp/themeunittestdata.wordpress.xml -- --authors=create)
+(cd new && npm run wp-env --silent run tests-cli curl https://raw.githubusercontent.com/WordPress/theme-test-data/b9752e0533a5acbb876951a8cbb5bcc69a56474c/themeunittestdata.wordpress.xml -- --output /tmp/themeunittestdata.wordpress.xml)
+(cd new && npm run wp-env --silent run tests-cli wp import /tmp/themeunittestdata.wordpress.xml -- --authors=create)
 
 # Deactivate WordPress Importer
 
-(cd old && wp-env run tests-cli wp plugin deactivate wordpress-importer)
-(cd new && wp-env run tests-cli wp plugin deactivate wordpress-importer)
+(cd old && npm run wp-env --silent run tests-cli wp plugin deactivate wordpress-importer)
+(cd new && npm run wp-env --silent run tests-cli wp plugin deactivate wordpress-importer)
 
 # Install block theme
 
-(cd old && wp-env run tests-cli wp theme activate twentytwentythree)
-(cd new && wp-env run tests-cli wp theme activate twentytwentythree)
+(cd old && npm run wp-env --silent run tests-cli wp theme activate twentytwentythree)
+(cd new && npm run wp-env --silent run tests-cli wp theme activate twentytwentythree)
 
 cd ./wpp-research || exit
 
@@ -78,8 +74,8 @@ node ../scripts/results.js "Server-Timing (Block Theme)" before.csv after.csv
 # Install classic theme
 
 cd ../
-(cd old && wp-env run tests-cli wp theme activate twentytwentyone)
-(cd new && wp-env run tests-cli wp theme activate twentytwentyone)
+(cd old && npm run wp-env --silent run tests-cli wp theme activate twentytwentyone)
+(cd new && npm run wp-env --silent run tests-cli wp theme activate twentytwentyone)
 
 cd ./wpp-research || exit
 
