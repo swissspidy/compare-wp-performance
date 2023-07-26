@@ -13,6 +13,9 @@ SKIP_INIT=${2-false}
 
 # Configure WordPress versions
 
+rm -rf old/.wp-env.override.json
+rm -rf new/.wp-env.override.json
+
 if [[ $OLD_VERSION == 'trunk' ]]; then
 	OLD_VERSION='master'
 fi
@@ -24,11 +27,20 @@ fi
 echo "Old version: $OLD_VERSION"
 
 if [[ $OLD_VERSION != 'latest' ]]; then
-	echo "{\"core\":\"WordPress/WordPress#$OLD_VERSION\"}" > old/.wp-env.override.json
+	if [[ "$OLD_VERSION" == *".zip"* ]]; then
+		echo "{\"core\":\"$OLD_VERSION\"}" >> old/.wp-env.override.json
+	else
+		echo "{\"core\":\"WordPress/WordPress#$OLD_VERSION\"}" >> old/.wp-env.override.json
+	fi
 fi
 
 echo "New version: $NEW_VERSION"
-echo "{\"core\":\"WordPress/WordPress#$NEW_VERSION\"}" > new/.wp-env.override.json
+
+if [[ "$NEW_VERSION" == *".zip"* ]]; then
+	echo "{\"core\":\"$NEW_VERSION\"}" >> old/.wp-env.override.json
+else
+	echo "{\"core\":\"WordPress/WordPress#$NEW_VERSION\"}" >> old/.wp-env.override.json
+fi
 
 if [[ $SKIP_INIT == 'false' ]]; then
 

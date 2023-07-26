@@ -30,6 +30,12 @@ To skip the initialization steps when you want to run the benchmarks multiple ti
 ./run.sh latest trunk true
 ```
 
+To test a specific WP version by ZIP file:
+
+```shell
+./run.sh latest https://wordpress.org/wordpress-6.3-RC2.zip
+```
+
 ### GitHub Actions
 
 This repository provides a GitHub Action to compare benchmarks of two separate WordPress versions.
