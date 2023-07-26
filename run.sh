@@ -37,9 +37,9 @@ fi
 echo "New version: $NEW_VERSION"
 
 if [[ "$NEW_VERSION" == *".zip"* ]]; then
-	echo "{\"core\":\"$NEW_VERSION\"}" >> old/.wp-env.override.json
+	echo "{\"core\":\"$NEW_VERSION\"}" >> new/.wp-env.override.json
 else
-	echo "{\"core\":\"WordPress/WordPress#$NEW_VERSION\"}" >> old/.wp-env.override.json
+	echo "{\"core\":\"WordPress/WordPress#$NEW_VERSION\"}" >> new/.wp-env.override.json
 fi
 
 if [[ $SKIP_INIT == 'false' ]]; then
