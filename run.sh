@@ -9,7 +9,7 @@ fi
 
 OLD_VERSION=${1-latest}
 NEW_VERSION=${2-trunk}
-SKIP_INIT=${2-false}
+SKIP_INIT=${3-false}
 
 # Configure WordPress versions
 
@@ -42,7 +42,7 @@ else
 	echo "{\"core\":\"WordPress/WordPress#$NEW_VERSION\"}" >> new/.wp-env.override.json
 fi
 
-if [[ $SKIP_INIT == 'false' ]]; then
+if [[ $SKIP_INIT != 'true' ]]; then
 
 	# Install WordPress
 
@@ -53,6 +53,19 @@ if [[ $SKIP_INIT == 'false' ]]; then
 
 	(cd old && npm run wp-env --silent run tests-cli wp rewrite structure '/%postname%/' -- --hard)
 	(cd new && npm run wp-env --silent run tests-cli wp rewrite structure '/%postname%/' -- --hard)
+
+	# Delete any data that might already exist by re-installing WordPress.
+	# Prevents mock data from being duplicated on subsequent runs.
+
+	(cd old && npm run wp-env --silent run tests-cli wp db reset -- --yes)
+	(cd old && npm run wp-env --silent run tests-cli wp core install -- --url=http://localhost:8891 --title=old --admin_user=admin --admin_password=password --admin_email=wordpress@example.com --skip-email)
+	(cd new && npm run wp-env --silent run tests-cli wp db reset -- --yes)
+	(cd new && npm run wp-env --silent run tests-cli wp core install -- --url=http://localhost:8881 --title=new --admin_user=admin --admin_password=password --admin_email=wordpress@example.com --skip-email)
+
+	# Activate plugins (again)
+
+	(cd old && npm run wp-env --silent run tests-cli wp plugin activate performance-lab wordpress-importer)
+	(cd new && npm run wp-env --silent run tests-cli wp plugin activate performance-lab wordpress-importer)
 
 	# Import mock data
 
