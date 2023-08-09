@@ -97,8 +97,8 @@ jobs:
       - name: Benchmark Web Vitals
         working-directory: wpp-research
         run: |
-          npm run research --silent -- benchmark-web-vitals -u http://localhost:8881/ -n 20 -p -o csv > before.csv
-          npm run research --silent -- benchmark-web-vitals -u http://localhost:8891/ -n 20 -p -o csv > after.csv
+          npm run research --silent -- benchmark-web-vitals -u http://localhost:8881/ -n 100 -p -o csv > before.csv
+          npm run research --silent -- benchmark-web-vitals -u http://localhost:8891/ -n 100 -p -o csv > after.csv
           node ../scripts/results.js "Web Vitals (Block Theme)" before.csv after.csv > summary.md
           cat summary.md >> $GITHUB_STEP_SUMMARY
 
@@ -118,8 +118,8 @@ jobs:
       - name: Benchmark Web Vitals
         working-directory: wpp-research
         run: |
-          npm run research --silent -- benchmark-web-vitals -u http://localhost:8881/ -n 20 -p -o csv > before.csv
-          npm run research --silent -- benchmark-web-vitals -u http://localhost:8891/ -n 20 -p -o csv > after.csv
+          npm run research --silent -- benchmark-web-vitals -u http://localhost:8881/ -n 100 -p -o csv > before.csv
+          npm run research --silent -- benchmark-web-vitals -u http://localhost:8891/ -n 100 -p -o csv > after.csv
           node ../scripts/results.js "Web Vitals (Classic Theme)" before.csv after.csv > summary.md
           cat summary.md >> $GITHUB_STEP_SUMMARY
 
