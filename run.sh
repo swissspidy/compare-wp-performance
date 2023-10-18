@@ -85,7 +85,7 @@ if [[ $SKIP_INIT != 'true' ]]; then
 else
 
 	(cd old && npm run wp-env --silent start)
-  (cd new && npm run wp-env --silent start)
+	(cd new && npm run wp-env --silent start)
 
 fi
 
