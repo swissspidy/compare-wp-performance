@@ -10,6 +10,8 @@ fi
 OLD_VERSION=${1-latest}
 NEW_VERSION=${2-trunk}
 SKIP_INIT=${3-false}
+OUTPUT=${4-markdown}
+SKIP_FORMATTING=${5-false}
 
 # Configure WordPress versions
 
@@ -97,13 +99,13 @@ cd ./wpp-research || exit
 
 npm run research --silent -- benchmark-web-vitals -u http://localhost:8881/ -n 20 -p -o csv > before.csv
 npm run research --silent -- benchmark-web-vitals -u http://localhost:8891/ -n 20 -p -o csv > after.csv
-node ../scripts/results.js "Web Vitals (Block Theme)" before.csv after.csv
+node ../scripts/results.js "Web Vitals (Block Theme)" before.csv after.csv $OUTPUT $SKIP_FORMATTING
 
 # Benchmark Server-Timing
 
 npm run research --silent  -- benchmark-server-timing -u http://localhost:8881/ -n 100 -p -o csv > before.csv
 npm run research --silent  -- benchmark-server-timing -u http://localhost:8891/ -n 100 -p -o csv > after.csv
-node ../scripts/results.js "Server-Timing (Block Theme)" before.csv after.csv
+node ../scripts/results.js "Server-Timing (Block Theme)" before.csv after.csv $OUTPUT $SKIP_FORMATTING
 
 # Install classic theme
 
@@ -117,13 +119,13 @@ cd ./wpp-research || exit
 
 npm run research --silent -- benchmark-web-vitals -u http://localhost:8881/ -n 20 -p -o csv > before.csv
 npm run research --silent -- benchmark-web-vitals -u http://localhost:8891/ -n 20 -p -o csv > after.csv
-node ../scripts/results.js "Web Vitals (Classic Theme)" before.csv after.csv
+node ../scripts/results.js "Web Vitals (Classic Theme)" before.csv after.csv $OUTPUT $SKIP_FORMATTING
 
 # Benchmark Server-Timing
 
 npm run research --silent  -- benchmark-server-timing -u http://localhost:8881/ -n 100 -p -o csv > before.csv
 npm run research --silent  -- benchmark-server-timing -u http://localhost:8891/ -n 100 -p -o csv > after.csv
-node ../scripts/results.js "Server-Timing (Classic Theme)" before.csv after.csv
+node ../scripts/results.js "Server-Timing (Classic Theme)" before.csv after.csv $OUTPUT $SKIP_FORMATTING
 
 # Shutdown sites again
 
