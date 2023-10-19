@@ -3,12 +3,15 @@
 import { existsSync } from 'node:fs';
 import csv from 'csvtojson';
 import tablemark from 'tablemark';
+import { stringify } from 'csv-stringify/sync';
 
 const args = process.argv.slice( 2 );
 
 const title = args[ 0 ];
 const beforeFile = args[ 1 ];
 const afterFile = args[ 2 ];
+const output = args[ 3 ];
+const skipFormatting = args[ 4 ];
 
 if ( ! existsSync( beforeFile ) ) {
 	console.error( `File not found: ${ beforeFile }` );
@@ -41,6 +44,34 @@ function formatAsMarkdownTable( results ) {
 			{ align: 'center' },
 		],
 	} );
+}
+
+/**
+ * Format test results as CSV.
+ *
+ * @param {Array<Record<string,string|number|boolean>>} results Test results.
+ *
+ * @return {string} CSV content.
+ */
+function formatAsCsv( results ) {
+	if ( ! results?.length ) {
+		return '';
+	}
+
+	const headings = Object.keys( results[ 0 ] );
+	const rows = results.map( ( result ) => {
+		const row = [];
+		headings.forEach( ( heading ) => {
+			if ( result[ heading ] ) {
+				row.push( result[ heading ] );
+			} else {
+				row.push( '' );
+			}
+		} );
+		return row;
+	} );
+
+	return stringify( [ headings, ...rows ] );
 }
 
 /**
@@ -88,17 +119,34 @@ for ( const i in beforeStats ) {
 		continue;
 	}
 
+	const diffPct = valueAfter / valueBefore - 1;
+	const diffAbs = valueAfter - valueBefore;
+
+	if ( skipFormatting && 'false' !== skipFormatting ) {
+		comparison.push( {
+			Metric: key,
+			Before: valueBefore,
+			After: valueAfter,
+			'Diff %': diffPct,
+			'Diff abs.': diffAbs,
+		} );
+		continue;
+	}
+
 	comparison.push( {
 		Metric: key,
 		Before: `${ valueBefore } ms`,
 		After: `${ valueAfter } ms`,
-		'Diff %': `${ ( ( valueAfter / valueBefore - 1 ) * 100 ).toFixed(
-			2
-		) }%`,
-		'Diff abs.': `${ ( valueAfter - valueBefore ).toFixed( 2 ) } ms`,
+		'Diff %': `${ ( diffPct * 100 ).toFixed( 2 ) }%`,
+		'Diff abs.': `${ diffAbs.toFixed( 2 ) } ms`,
 	} );
 }
 
-console.log( `**${ title }**\n` );
-console.log( formatAsMarkdownTable( comparison ) );
+if ( 'csv' === output ) {
+	console.log( `${ title },,,,` );
+	console.log( formatAsCsv( comparison ) );
+} else {
+	console.log( `**${ title }**\n` );
+	console.log( formatAsMarkdownTable( comparison ) );
+}
 console.log();

@@ -13,7 +13,7 @@ this repository provides a [GitHub Action](https://github.com/features/actions) 
 Run the following command in the terminal:
 
 ```shell
-./run.sh [old=latest] [new=trunk] [skip_init=false]
+./run.sh [old=latest] [new=trunk] [skip_init=false] [output=markdown] [skip_formatting=false] [print_to_files=false]
 ```
 
 By default, it compares the latest stable release with the current trunk version. So `./run.sh` is the same as `./run.sh latest trunk`.
@@ -35,6 +35,20 @@ To test a specific WP version by ZIP file:
 ```shell
 ./run.sh latest https://wordpress.org/wordpress-6.3-RC2.zip
 ```
+
+The default output is as Markdown tables. To get output data as CSV without formatted numbers:
+
+```shell
+./run.sh latest trunk false csv true
+```
+
+To pipe that output into (CSV) files:
+
+```shell
+./run.sh latest trunk false csv true true
+```
+
+This will result in four CSV files with the individual table results.
 
 ### GitHub Actions
 
