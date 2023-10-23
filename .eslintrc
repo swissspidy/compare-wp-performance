@@ -12,7 +12,7 @@
 		"import/no-unresolved": [
 			"error",
 			{
-				"ignore": ["^tablemark$"]
+				"ignore": ["^tablemark$", "csv-stringify/sync"]
 			}
 		]
 	},
