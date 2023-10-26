@@ -17,6 +17,7 @@
 	"config": {
 		"WP_DEBUG": false,
 		"SCRIPT_DEBUG": false,
-		"SAVEQUERIES": false
+		"SAVEQUERIES": false,
+		"DISABLE_WP_CRON": true
 	}
 }
