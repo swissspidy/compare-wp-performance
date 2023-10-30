@@ -13,6 +13,14 @@ on:
         type: string
         default: "trunk"
         required: true
+      theme:
+        description: "Theme to test"
+        type: choice
+        options:
+        - twentytwentyone
+        - twentytwentythree
+        - twentytwentyfour
+        required: true
 
 jobs:
   benchmarks:
@@ -96,44 +104,29 @@ jobs:
           echo "New version – Theme info"
           (cd new && npm run wp-env run tests-cli wp theme list)
 
-      - name: Install classic theme
+      - name: Install theme
         run: |
-          (cd old && wp-env run tests-cli wp theme activate twentytwentyone)
-          (cd new && wp-env run tests-cli wp theme activate twentytwentyone)
+          (cd old && wp-env run tests-cli wp theme activate $THEME)
+          (cd new && wp-env run tests-cli wp theme activate $THEME)
+        env:
+          THEME: ${{ inputs.theme }}
 
       - name: Benchmark Web Vitals
         working-directory: wpp-research
         run: |
           npm run research --silent -- benchmark-web-vitals -u http://localhost:8881/ -n 100 -p -o csv > before.csv
           npm run research --silent -- benchmark-web-vitals -u http://localhost:8891/ -n 100 -p -o csv > after.csv
-          node ../scripts/results.js "Web Vitals (Classic Theme)" before.csv after.csv > summary.md
+          node ../scripts/results.js "Web Vitals ($THEME)" before.csv after.csv > summary.md
           cat summary.md >> $GITHUB_STEP_SUMMARY
+        env:
+          THEME: ${{ inputs.theme }}
 
       - name: Benchmark Server-Timing
         working-directory: wpp-research
         run: |
           npm run research --silent -- benchmark-server-timing -u http://localhost:8881/ -n 100 -p -o csv > before.csv
           npm run research --silent -- benchmark-server-timing -u http://localhost:8891/ -n 100 -p -o csv > after.csv
-          node ../scripts/results.js "Server-Timing (Classic Theme)" before.csv after.csv > summary.md
+          node ../scripts/results.js "Server-Timing ($THEME)" before.csv after.csv > summary.md
           cat summary.md >> $GITHUB_STEP_SUMMARY
-
-      - name: Install block theme
-        run: |
-          (cd old && wp-env run tests-cli wp theme activate twentytwentythree)
-          (cd new && wp-env run tests-cli wp theme activate twentytwentythree)
-
-      - name: Benchmark Web Vitals
-        working-directory: wpp-research
-        run: |
-          npm run research --silent -- benchmark-web-vitals -u http://localhost:8881/ -n 100 -p -o csv > before.csv
-          npm run research --silent -- benchmark-web-vitals -u http://localhost:8891/ -n 100 -p -o csv > after.csv
-          node ../scripts/results.js "Web Vitals (Block Theme)" before.csv after.csv > summary.md
-          cat summary.md >> $GITHUB_STEP_SUMMARY
-
-      - name: Benchmark Server-Timing
-        working-directory: wpp-research
-        run: |
-          npm run research --silent  -- benchmark-server-timing -u http://localhost:8881/ -n 100 -p -o csv > before.csv
-          npm run research --silent  -- benchmark-server-timing -u http://localhost:8891/ -n 100 -p -o csv > after.csv
-          node ../scripts/results.js "Server-Timing (Block Theme)" before.csv after.csv > summary.md
-          cat summary.md >> $GITHUB_STEP_SUMMARY
+        env:
+          THEME: ${{ inputs.theme }}
