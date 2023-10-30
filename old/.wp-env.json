@@ -7,8 +7,9 @@
 		"https://downloads.wordpress.org/plugin/performance-lab.zip"
 	],
 	"themes": [
-		"https://downloads.wordpress.org/theme/twentytwentyone.1.8.zip",
-		"https://downloads.wordpress.org/theme/twentytwentythree.1.1.zip"
+		"https://downloads.wordpress.org/theme/twentytwentyone.zip",
+		"https://downloads.wordpress.org/theme/twentytwentythree.zip",
+		"WordPress/twentytwentyfour"
 	],
 	"mappings": {
 		"wp-cli.yml": "../shared/wp-cli.yml",

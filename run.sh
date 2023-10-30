@@ -9,10 +9,11 @@ fi
 
 OLD_VERSION=${1-latest}
 NEW_VERSION=${2-trunk}
-SKIP_INIT=${3-false}
-OUTPUT=${4-markdown}
-SKIP_FORMATTING=${5-false}
-PRINT_TO_FILES=${6-false}
+THEME=${3-twentytwentyone}
+SKIP_INIT=${4-false}
+OUTPUT=${5-markdown}
+SKIP_FORMATTING=${6-false}
+PRINT_TO_FILES=${7-false}
 
 # Configure WordPress versions
 
@@ -89,53 +90,10 @@ else
 
 fi
 
-# # Install theme
+# Install theme
 
-# (cd old && npm run wp-env --silent run tests-cli wp theme activate twentytwentythree)
-# (cd new && npm run wp-env --silent run tests-cli wp theme activate twentytwentythree)
-
-# ## Post debuging info.
-# echo "Old version – Theme info"
-# (cd old && npm run wp-env run tests-cli wp theme list)
-
-# echo "New version – Theme info"
-# (cd new && npm run wp-env run tests-cli wp theme list)
-
-# cd ./wpp-research || exit
-
-# # Benchmark Web Vitals
-
-# npm run research --silent -- benchmark-web-vitals -u http://localhost:8881/ -n 20 -p -o csv > before.csv
-# npm run research --silent -- benchmark-web-vitals -u http://localhost:8891/ -n 20 -p -o csv > after.csv
-# if [[ $PRINT_TO_FILES == 'true' ]]; then
-# 	if [[ $OUTPUT == 'csv' ]]; then
-# 		node ../scripts/results.js "Web Vitals (twentytwentythree)" before.csv after.csv $OUTPUT $SKIP_FORMATTING > web-vitals-block-theme.csv
-# 	else
-# 		node ../scripts/results.js "Web Vitals (twentytwentythree)" before.csv after.csv $OUTPUT $SKIP_FORMATTING > web-vitals-block-theme.md
-# 	fi
-# else
-# 	node ../scripts/results.js "Web Vitals (twentytwentythree)" before.csv after.csv $OUTPUT $SKIP_FORMATTING
-# fi
-
-# # Benchmark Server-Timing
-
-# npm run research --silent  -- benchmark-server-timing -u http://localhost:8881/ -n 100 -p -o csv > before.csv
-# npm run research --silent  -- benchmark-server-timing -u http://localhost:8891/ -n 100 -p -o csv > after.csv
-# if [[ $PRINT_TO_FILES == 'true' ]]; then
-# 	if [[ $OUTPUT == 'csv' ]]; then
-# 		node ../scripts/results.js "Server-Timing (twentytwentythree)" before.csv after.csv $OUTPUT $SKIP_FORMATTING > server-timing-block-theme.csv
-# 	else
-# 		node ../scripts/results.js "Server-Timing (twentytwentythree)" before.csv after.csv $OUTPUT $SKIP_FORMATTING > server-timing-block-theme.md
-# 	fi
-# else
-# 	node ../scripts/results.js "Server-Timing (twentytwentythree)" before.csv after.csv $OUTPUT $SKIP_FORMATTING
-# fi
-
-# Install classic theme
-
-# cd ../
-(cd old && npm run wp-env --silent run tests-cli wp theme activate twentytwentyone)
-(cd new && npm run wp-env --silent run tests-cli wp theme activate twentytwentyone)
+(cd old && npm run wp-env --silent run tests-cli wp theme activate $THEME)
+(cd new && npm run wp-env --silent run tests-cli wp theme activate $THEME)
 
 ## Post debuging info.
 echo "Old version – Theme info"
@@ -152,12 +110,12 @@ npm run research --silent -- benchmark-web-vitals -u http://localhost:8881/ -n 2
 npm run research --silent -- benchmark-web-vitals -u http://localhost:8891/ -n 20 -p -o csv > after.csv
 if [[ $PRINT_TO_FILES == 'true' ]]; then
 	if [[ $OUTPUT == 'csv' ]]; then
-		node ../scripts/results.js "Web Vitals (twentytwentyone)" before.csv after.csv $OUTPUT $SKIP_FORMATTING > web-vitals-classic-theme.csv
+		node ../scripts/results.js "Web Vitals ($THEME)" before.csv after.csv $OUTPUT $SKIP_FORMATTING > web-vitals-classic-theme.csv
 	else
-		node ../scripts/results.js "Web Vitals (twentytwentyone)" before.csv after.csv $OUTPUT $SKIP_FORMATTING > web-vitals-classic-theme.md
+		node ../scripts/results.js "Web Vitals ($THEME)" before.csv after.csv $OUTPUT $SKIP_FORMATTING > web-vitals-classic-theme.md
 	fi
 else
-	node ../scripts/results.js "Web Vitals (twentytwentyone)" before.csv after.csv $OUTPUT $SKIP_FORMATTING
+	node ../scripts/results.js "Web Vitals ($THEME)" before.csv after.csv $OUTPUT $SKIP_FORMATTING
 fi
 
 # Benchmark Server-Timing
@@ -166,12 +124,12 @@ npm run research --silent  -- benchmark-server-timing -u http://localhost:8881/ 
 npm run research --silent  -- benchmark-server-timing -u http://localhost:8891/ -n 100 -p -o csv > after.csv
 if [[ $PRINT_TO_FILES == 'true' ]]; then
 	if [[ $OUTPUT == 'csv' ]]; then
-		node ../scripts/results.js "Server-Timing (twentytwentyone)" before.csv after.csv $OUTPUT $SKIP_FORMATTING > server-timing-classic-theme.csv
+		node ../scripts/results.js "Server-Timing ($THEME)" before.csv after.csv $OUTPUT $SKIP_FORMATTING > server-timing-classic-theme.csv
 	else
-		node ../scripts/results.js "Server-Timing (twentytwentyone)" before.csv after.csv $OUTPUT $SKIP_FORMATTING > server-timing-classic-theme.md
+		node ../scripts/results.js "Server-Timing ($THEME)" before.csv after.csv $OUTPUT $SKIP_FORMATTING > server-timing-classic-theme.md
 	fi
 else
-	node ../scripts/results.js "Server-Timing (twentytwentyone)" before.csv after.csv $OUTPUT $SKIP_FORMATTING
+	node ../scripts/results.js "Server-Timing ($THEME)" before.csv after.csv $OUTPUT $SKIP_FORMATTING
 fi
 
 # Shutdown sites again
