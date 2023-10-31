@@ -110,9 +110,9 @@ npm run research --silent -- benchmark-web-vitals -u http://localhost:8881/ -n 2
 npm run research --silent -- benchmark-web-vitals -u http://localhost:8891/ -n 20 -p -o csv > after.csv
 if [[ $PRINT_TO_FILES == 'true' ]]; then
 	if [[ $OUTPUT == 'csv' ]]; then
-		node ../scripts/results.js "Web Vitals ($THEME)" before.csv after.csv $OUTPUT $SKIP_FORMATTING > web-vitals-classic-theme.csv
+		node ../scripts/results.js "Web Vitals ($THEME)" before.csv after.csv $OUTPUT $SKIP_FORMATTING > web-vitals-$THEME.csv
 	else
-		node ../scripts/results.js "Web Vitals ($THEME)" before.csv after.csv $OUTPUT $SKIP_FORMATTING > web-vitals-classic-theme.md
+		node ../scripts/results.js "Web Vitals ($THEME)" before.csv after.csv $OUTPUT $SKIP_FORMATTING > web-vitals-$THEME.md
 	fi
 else
 	node ../scripts/results.js "Web Vitals ($THEME)" before.csv after.csv $OUTPUT $SKIP_FORMATTING
@@ -124,9 +124,9 @@ npm run research --silent  -- benchmark-server-timing -u http://localhost:8881/ 
 npm run research --silent  -- benchmark-server-timing -u http://localhost:8891/ -n 100 -p -o csv > after.csv
 if [[ $PRINT_TO_FILES == 'true' ]]; then
 	if [[ $OUTPUT == 'csv' ]]; then
-		node ../scripts/results.js "Server-Timing ($THEME)" before.csv after.csv $OUTPUT $SKIP_FORMATTING > server-timing-classic-theme.csv
+		node ../scripts/results.js "Server-Timing ($THEME)" before.csv after.csv $OUTPUT $SKIP_FORMATTING > server-timing-$THEME.csv
 	else
-		node ../scripts/results.js "Server-Timing ($THEME)" before.csv after.csv $OUTPUT $SKIP_FORMATTING > server-timing-classic-theme.md
+		node ../scripts/results.js "Server-Timing ($THEME)" before.csv after.csv $OUTPUT $SKIP_FORMATTING > server-timing-$THEME.md
 	fi
 else
 	node ../scripts/results.js "Server-Timing ($THEME)" before.csv after.csv $OUTPUT $SKIP_FORMATTING
