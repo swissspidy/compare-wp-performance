@@ -16,8 +16,8 @@ PRINT_TO_FILES=${6-false}
 
 # Configure WordPress versions
 
-rm -rf old/.wp-env.override.json
-rm -rf new/.wp-env.override.json
+rm -f old/.wp-env.override.json
+rm -f new/.wp-env.override.json
 
 if [[ $OLD_VERSION == 'trunk' ]]; then
 	OLD_VERSION='master'
@@ -30,19 +30,19 @@ fi
 echo "Old version: $OLD_VERSION"
 
 if [[ $OLD_VERSION != 'latest' ]]; then
-	if [[ "$OLD_VERSION" == *".zip"* ]]; then
-		echo "{\"core\":\"$OLD_VERSION\"}" >> old/.wp-env.override.json
+	if [[ $OLD_VERSION == *.zip* ]]; then
+		printf '{"core":"%s"}' "$OLD_VERSION" >> old/.wp-env.override.json
 	else
-		echo "{\"core\":\"WordPress/WordPress#$OLD_VERSION\"}" >> old/.wp-env.override.json
+		printf '{"core":"WordPress/WordPress#%s"}' "$OLD_VERSION" >> old/.wp-env.override.json
 	fi
 fi
 
 echo "New version: $NEW_VERSION"
 
-if [[ "$NEW_VERSION" == *".zip"* ]]; then
-	echo "{\"core\":\"$NEW_VERSION\"}" >> new/.wp-env.override.json
+if [[ "$NEW_VERSION" == *.zip* ]]; then
+	printf '{"core":"%s"}' "$NEW_VERSION" >> new/.wp-env.override.json
 else
-	echo "{\"core\":\"WordPress/WordPress#$NEW_VERSION\"}" >> new/.wp-env.override.json
+	printf '{"core":"WordPress/WordPress#%s"}' "$NEW_VERSION" >> new/.wp-env.override.json
 fi
 
 if [[ $SKIP_INIT != 'true' ]]; then
@@ -124,9 +124,10 @@ else
 	node ../scripts/results.js "Server-Timing (Block Theme)" before.csv after.csv $OUTPUT $SKIP_FORMATTING
 fi
 
+cd -
+
 # Install classic theme
 
-cd ../
 (cd old && npm run wp-env --silent run tests-cli wp theme activate twentytwentyone)
 (cd new && npm run wp-env --silent run tests-cli wp theme activate twentytwentyone)
 
@@ -160,8 +161,9 @@ else
 	node ../scripts/results.js "Server-Timing (Classic Theme)" before.csv after.csv $OUTPUT $SKIP_FORMATTING
 fi
 
+cd -
+
 # Shutdown sites again
 
-cd ../
 (cd old && npm run wp-env --silent stop)
 (cd new && npm run wp-env --silent stop)
