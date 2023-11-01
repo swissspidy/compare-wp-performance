@@ -8,7 +8,8 @@
 	],
 	"themes": [
 		"https://downloads.wordpress.org/theme/twentytwentyone.zip",
-		"https://downloads.wordpress.org/theme/twentytwentythree.zip"
+		"https://downloads.wordpress.org/theme/twentytwentythree.zip",
+		"WordPress/twentytwentyfour"
 	],
 	"mappings": {
 		"wp-cli.yml": "../shared/wp-cli.yml",
@@ -17,6 +18,7 @@
 	"config": {
 		"WP_DEBUG": false,
 		"SCRIPT_DEBUG": false,
-		"SAVEQUERIES": false
+		"SAVEQUERIES": false,
+		"DISABLE_WP_CRON": true
 	}
 }
