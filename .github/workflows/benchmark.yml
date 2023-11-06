@@ -114,8 +114,8 @@ jobs:
       - name: Benchmark Web Vitals
         working-directory: wpp-research
         run: |
-          npm run research --silent -- benchmark-web-vitals -u http://localhost:8881/ -n 100 -p -o csv > before.csv
-          npm run research --silent -- benchmark-web-vitals -u http://localhost:8891/ -n 100 -p -o csv > after.csv
+          npm run research --silent -- benchmark-web-vitals -u http://localhost:8881/ -n 100 -p -v -o csv > before.csv
+          npm run research --silent -- benchmark-web-vitals -u http://localhost:8891/ -n 100 -p -v -o csv > after.csv
           node ../scripts/results.js "Web Vitals ($THEME)" before.csv after.csv > summary.md
           cat summary.md >> $GITHUB_STEP_SUMMARY
         env:
@@ -124,8 +124,8 @@ jobs:
       - name: Benchmark Server-Timing
         working-directory: wpp-research
         run: |
-          npm run research --silent -- benchmark-server-timing -u http://localhost:8881/ -n 100 -p -o csv > before.csv
-          npm run research --silent -- benchmark-server-timing -u http://localhost:8891/ -n 100 -p -o csv > after.csv
+          npm run research --silent -- benchmark-server-timing -u http://localhost:8881/ -n 100 -p -v -o csv > before.csv
+          npm run research --silent -- benchmark-server-timing -u http://localhost:8891/ -n 100 -p -v -o csv > after.csv
           node ../scripts/results.js "Server-Timing ($THEME)" before.csv after.csv > summary.md
           cat summary.md >> $GITHUB_STEP_SUMMARY
         env:
