@@ -34,7 +34,6 @@ jobs:
         uses: actions/checkout@v3
         with:
           repository: GoogleChromeLabs/wpp-research
-          ref: add/show-variance
           path: wpp-research
 
       - name: Setup Node
