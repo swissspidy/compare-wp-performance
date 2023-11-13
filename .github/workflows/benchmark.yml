@@ -21,6 +21,11 @@ on:
         - twentytwentythree
         - twentytwentyfour
         required: true
+      memcached:
+        description: 'Whether to test with memcached enabled'
+        type: 'boolean'
+        default: false
+        required: false
 
 jobs:
   benchmarks:
@@ -79,6 +84,8 @@ jobs:
           chmod -R 767 new/ # TODO: Possibly integrate in wp-env
           (cd old && wp-env start)
           (cd new && wp-env start)
+        env:
+          LOCAL_PHP_MEMCACHED: ${{ inputs.memcached }}
 
       - name: Update permalink structure
         run: |
