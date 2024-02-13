@@ -95,12 +95,12 @@ jobs:
       - name: Install additional languages
         run: |
           (cd old && wp-env run tests-cli wp language core install ${{ inputs.locale }})
-          (cd old && wp-env run tests-cli wp language plugin install ${{ inputs.locale }}) --all
-          (cd old && wp-env run tests-cli wp language theme install ${{ inputs.locale }}) --all
+          (cd old && wp-env run tests-cli wp language plugin install ${{ inputs.locale }} -- --all)
+          (cd old && wp-env run tests-cli wp language theme install ${{ inputs.locale }} -- --all)
           (cd old && wp-env run tests-cli wp site switch-language ${{ inputs.locale }})
           (cd new && wp-env run tests-cli wp language core install ${{ inputs.locale }})
-          (cd new && wp-env run tests-cli wp language plugin install ${{ inputs.locale }}) --all
-          (cd new && wp-env run tests-cli wp language theme install ${{ inputs.locale }}) --all
+          (cd new && wp-env run tests-cli wp language plugin install ${{ inputs.locale }} -- --all)
+          (cd new && wp-env run tests-cli wp language theme install ${{ inputs.locale }} -- --all)
           (cd new && wp-env run tests-cli wp site switch-language ${{ inputs.locale }})
         if: ${{ inputs.locale != 'en_US' }}
 
