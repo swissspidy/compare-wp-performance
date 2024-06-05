@@ -144,6 +144,9 @@ jobs:
           cat summary.md >> $GITHUB_STEP_SUMMARY
         env:
           THEME: ${{ inputs.theme }}
+          MEMCACHED: ${{ inputs.memcached }}
+          OLD_VERSION: ${{ inputs.old == 'trunk' && 'master' || inputs.old }}
+          NEW_VERSION: ${{ inputs.new == 'trunk' && 'master' || inputs.new }}
 
       - name: Benchmark Server-Timing
         working-directory: wpp-research
