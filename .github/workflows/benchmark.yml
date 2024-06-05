@@ -150,8 +150,10 @@ jobs:
         run: |
           npm run research --silent -- benchmark-server-timing -u http://localhost:8881/ -n 100 -p -v -o csv > before.csv
           npm run research --silent -- benchmark-server-timing -u http://localhost:8891/ -n 100 -p -v -o csv > after.csv
-          echo "Old version: $OLD_VERSION; New Version: $NEW_VERSION" > summary.md
-          node ../scripts/results.js "Server-Timing ($THEME)" before.csv after.csv > summary.md
+          node ../scripts/results.js "## Test run data: Theme: $THEME | Old version: $OLD_VERSION | New Version: $NEW_VERSION | memcached: $MEMCACHED" before.csv after.csv > summary.md
           cat summary.md >> $GITHUB_STEP_SUMMARY
         env:
           THEME: ${{ inputs.theme }}
+          MEMCACHED: ${{ inputs.memcached }}
+          OLD_VERSION: ${{ inputs.old == 'trunk' && 'master' || inputs.old }}
+          NEW_VERSION: ${{ inputs.new == 'trunk' && 'master' || inputs.new }}
