@@ -6,8 +6,8 @@ on:
       title:
         description: "A title for this comparison run"
         type: string
-        default: "Benchmark run on ${{ github.run_number }}"
-        required: true
+        default: ""
+        required: false
       old:
         description: "Old version to compare"
         type: string
