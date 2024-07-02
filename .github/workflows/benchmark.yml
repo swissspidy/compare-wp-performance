@@ -27,7 +27,7 @@ on:
         - twentytwentyfour
         required: true
       memcached:
-        description: 'Whether to test with memcached enabled'
+        description: 'Memcached enabled'
         type: 'boolean'
         default: false
         required: false
