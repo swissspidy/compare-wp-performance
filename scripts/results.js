@@ -75,6 +75,25 @@ function formatAsCsv( results ) {
 }
 
 /**
+ * Simplify the data into a summary table, showing only the p50 (mean) results.
+ *
+ * @param {Record<string,Record<string,string|number|boolean>>} results Test results.
+ *
+ * @return {Array<Record<string,string|number|boolean>>} Simplified test results.
+ */
+function simplifyData( results ) {
+	const simplified = [];
+	for ( const result in results ) {
+		// Only include results where the first column contains "(p50)".
+		if ( result[ 0 ].indexOf( '(p50)' ) < 0 ) {
+			continue;
+		}
+		simplified.push( result );
+	}
+	return simplified;
+}
+
+/**
  * @type {Array<{file: string, title: string, results: Record<string,string|number|boolean>[]}>}
  */
 let beforeStats = [];
@@ -147,6 +166,8 @@ if ( 'csv' === output ) {
 	console.log( formatAsCsv( comparison ) );
 } else {
 	console.log( `**${ title }**\n` );
+	const simplifiedData = simplifyData( comparison );
+	console.log( formatAsMarkdownTable( simplifiedData ) );
 	console.log( formatAsMarkdownTable( comparison ) );
 }
 console.log();
