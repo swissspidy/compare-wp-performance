@@ -167,7 +167,9 @@ if ( 'csv' === output ) {
 } else {
 	console.log( `**${ title }**\n` );
 	const simplifiedData = simplifyData( comparison );
+	console.log( `***Summary***\n` );
 	console.log( formatAsMarkdownTable( simplifiedData ) );
+	console.log( `***Details***\n` );
 	console.log( formatAsMarkdownTable( comparison ) );
 }
 console.log();
