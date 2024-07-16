@@ -85,10 +85,9 @@ function simplifyData( results ) {
 	const simplified = [];
 	for ( const result in results ) {
 		// Only include results where the first column contains "(p50)".
-		if ( result[ 0 ].indexOf( '(p50)' ) < 0 ) {
-			continue;
+		if ( 0 <= result[ 0 ].indexOf( '(p50)' ) ) {
+			simplified.push( result );
 		}
-		simplified.push( result );
 	}
 	return simplified;
 }
