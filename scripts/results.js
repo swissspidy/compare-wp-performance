@@ -82,14 +82,18 @@ function formatAsCsv( results ) {
  * @return {Array<Record<string,string|number|boolean>>} Simplified test results.
  */
 function simplifyData( results ) {
-	const simplified = [];
-	for ( const result in results ) {
-		// Only include results where the first column contains "(p50)".
-		if ( 0 <= result[ 0 ].indexOf( '(p50)' ) ) {
-			simplified.push( result );
-		}
-	}
-	return simplified;
+	const headings = Object.keys( results[ 0 ] );
+	const rows = results.map( ( result ) => {
+		const row = [];
+		headings.forEach( ( heading ) => {
+			if (  0 <= result[ 0 ].indexOf( '(p50)' ) ) {
+				row.push( result[ heading ] );
+			}
+		} );
+		return row;
+	} );
+
+	return rows;
 }
 
 /**
