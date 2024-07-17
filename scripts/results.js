@@ -85,7 +85,7 @@ function simplifyData( results ) {
 	const simplified = [];
 	for ( const result in results ) {
 		// Only include Metrics containing "(p50)".
-		if ( 0 <= result['Metric'].indexOf( '(p50)' ) ) {
+		if ( result['Metric'] && 0 <= result['Metric'].indexOf( '(p50)' ) ) {
 			simplified.push( result );
 		}
 	}
