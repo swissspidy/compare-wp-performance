@@ -85,8 +85,8 @@ function simplifyData( results ) {
 	const simplified = [];
 	for ( const result in results ) {
 		// Only include results where the first column contains "(p50)".
-		console.log( "debug", result, result[ 0 ] );
-		if ( 0 <= result[ 0 ].indexOf( '(p50)' ) ) {
+		console.log( "debug", result.Metric, 0 <= result.Metric.indexOf( '(p50)' ) );
+		if ( 0 <= result.Metric.indexOf( '(p50)' ) ) {
 			simplified.push( result );
 		}
 	}
@@ -171,8 +171,5 @@ if ( 'csv' === output ) {
 	console.log( formatAsMarkdownTable( simplifiedData ) );
 	console.log( `***Details***\n` );
 	console.log( formatAsMarkdownTable( comparison ) );
-	console.log( `***Debug***\n` );
-	console.log( JSON.stringify( comparison ) );
-
 }
 console.log();
