@@ -82,13 +82,15 @@ function formatAsCsv( results ) {
  * @return {Array<Record<string,string|number|boolean>>} Simplified test results.
  */
 function simplifyData( results ) {
-	const rows = results.map( ( result ) => {
+	const simplified = [];
+	for ( const result in results ) {
+		// Only include results where the first column contains "(p50)".
+		console.log( "debug", result, result[ 0 ] );
 		if ( 0 <= result[ 0 ].indexOf( '(p50)' ) ) {
-			return result;
+			simplified.push( result );
 		}
-	} );
-
-	return rows;
+	}
+	return simplified;
 }
 
 /**
