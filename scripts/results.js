@@ -84,8 +84,7 @@ function formatAsCsv( results ) {
 function simplifyData( results ) {
 	const simplified = [];
 	for ( const result in results ) {
-		// Only include results where the first column contains "(p50)".
-		console.log( "debug", result['Metric'], 0 <= result['Metric'].indexOf( '(p50)' ) );
+		// Only include Metrics containing "(p50)".
 		if ( 0 <= result['Metric'].indexOf( '(p50)' ) ) {
 			simplified.push( result );
 		}
