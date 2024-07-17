@@ -82,15 +82,10 @@ function formatAsCsv( results ) {
  * @return {Array<Record<string,string|number|boolean>>} Simplified test results.
  */
 function simplifyData( results ) {
-	const headings = Object.keys( results[ 0 ] );
 	const rows = results.map( ( result ) => {
-		const row = [];
-		headings.forEach( ( heading ) => {
-			if (  0 <= result[ 0 ].indexOf( '(p50)' ) ) {
-				row.push( result[ heading ] );
-			}
-		} );
-		return row;
+		if ( 0 <= result[ 0 ].indexOf( '(p50)' ) ) {
+			return result;
+		}
 	} );
 
 	return rows;
@@ -174,5 +169,8 @@ if ( 'csv' === output ) {
 	console.log( formatAsMarkdownTable( simplifiedData ) );
 	console.log( `***Details***\n` );
 	console.log( formatAsMarkdownTable( comparison ) );
+	console.log( `***Debug***\n` );
+	console.log( JSON.stringify( comparison ) );
+
 }
 console.log();
