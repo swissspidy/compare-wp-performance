@@ -82,7 +82,8 @@ function formatAsCsv( results ) {
  * @return {Array<Record<string,string|number|boolean>>} Simplified test results.
  */
 function simplifyData( results ) {
-	const simplified = [];
+	let simplified = [];
+	let result;
 	for ( let x = 0; x < results.length; x++ ) {
 		// Only include Metrics containing "(p50)".
 		result = results[ x ];
