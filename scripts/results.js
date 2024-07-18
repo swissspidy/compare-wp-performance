@@ -83,8 +83,9 @@ function formatAsCsv( results ) {
  */
 function simplifyData( results ) {
 	const simplified = [];
-	for ( const result in results ) {
+	for ( x=0; x < results.length; x++ ) {
 		// Only include Metrics containing "(p50)".
+		result = results[ x ];
 		if ( result['Metric'] && 0 <= result['Metric'].indexOf( '(p50)' ) ) {
 			simplified.push( result );
 		}
@@ -165,10 +166,9 @@ if ( 'csv' === output ) {
 	console.log( formatAsCsv( comparison ) );
 } else {
 	console.log( `**${ title }**\n` );
-	const simplifiedData = simplifyData( comparison );
 	console.log( `***Summary***\n` );
-	console.log( formatAsMarkdownTable( simplifiedData ) );
+	console.log( formatAsMarkdownTable( simplifyData( comparison ) ) );
 	console.log( `***Details***\n` );
 	console.log( formatAsMarkdownTable( comparison ) );
+
 }
-console.log();
