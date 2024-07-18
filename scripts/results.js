@@ -83,7 +83,7 @@ function formatAsCsv( results ) {
  */
 function simplifyData( results ) {
 	const simplified = [];
-	for ( x=0; x < results.length; x++ ) {
+	for ( let x = 0; x < results.length; x++ ) {
 		// Only include Metrics containing "(p50)".
 		result = results[ x ];
 		if ( result['Metric'] && 0 <= result['Metric'].indexOf( '(p50)' ) ) {
