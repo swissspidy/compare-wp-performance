@@ -82,12 +82,12 @@ function formatAsCsv( results ) {
  * @return {Array<Record<string,string|number|boolean>>} Simplified test results.
  */
 function simplifyData( results ) {
-	let simplified = [];
+	const simplified = [];
 	let result;
 	for ( let x = 0; x < results.length; x++ ) {
 		// Only include Metrics containing "(p50)".
 		result = results[ x ];
-		if ( result['Metric'] && 0 <= result['Metric'].indexOf( '(p50)' ) ) {
+		if ( result.Metric && 0 <= result.Metric.indexOf( '(p50)' ) ) {
 			simplified.push( result );
 		}
 	}
@@ -171,5 +171,4 @@ if ( 'csv' === output ) {
 	console.log( formatAsMarkdownTable( simplifyData( comparison ) ) );
 	console.log( `***Details***\n` );
 	console.log( formatAsMarkdownTable( comparison ) );
-
 }
