@@ -55,13 +55,11 @@ jobs:
         working-directory: wpp-research
         run: npm ci
 
-      - name: Configure WordPress versions
+      - name: Run tests
         run: |
           OLD_ARGS=()
           OLD_ARGS+=("--mount=./wp-content/mu-plugins:/wordpress/wp-content/mu-plugins")
           OLD_ARGS+=(--blueprint=./blueprint-old.json)
-
-          echo "::group::Prepare shared blueprint"
 
           cp blueprint.json blueprint-shared.json
 
@@ -72,8 +70,6 @@ jobs:
             jq --argjson step "{ \"step\": \"setSiteLanguage\", \"language\": \"$WP_LOCALE\" }" '.steps += [$step]' blueprint-shared.json > blueprint-tmp.json
             mv blueprint-tmp.json blueprint-shared.json
           fi;
-
-          echo "::endgroup::"
 
           echo "::group::Prepare blueprint for old version"
 
@@ -111,10 +107,10 @@ jobs:
           npm run --prefix wpp-research research --silent -- benchmark-web-vitals -u http://localhost:9400/ -n 100 -p -v -o csv > before_cwv.csv
           npm run --prefix wpp-research research --silent -- benchmark-server-timing -u http://localhost:9400/ -n 100 -p -v -o csv > before_st.csv
 
-          echo "::endgroup::"
-
           # Stop Playground server again
           npx --yes kill-port 9400
+
+          echo "::endgroup::"
 
           NEW_ARGS=()
           NEW_ARGS+=("--mount=./wp-content/mu-plugins:/wordpress/wp-content/mu-plugins")
