@@ -161,10 +161,10 @@ jobs:
 
           echo "::group::Summarizing results"
 
-          node ../scripts/results.js "Server-Timing ($THEME)" before_cwv.csv after_cwv.csv > summary.md
+          node ./scripts/results.js "Server-Timing ($THEME)" before_cwv.csv after_cwv.csv > summary.md
           cat summary.md >> $GITHUB_STEP_SUMMARY
 
-          node ../scripts/results.js "Web Vitals ($THEME)" before_st.csv after_st.csv > summary.md
+          node ./scripts/results.js "Web Vitals ($THEME)" before_st.csv after_st.csv > summary.md
           cat summary.md >> $GITHUB_STEP_SUMMARY
 
           echo "::endgroup::"
