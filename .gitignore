@@ -1,3 +1,5 @@
 wpp-research/
-.wp-env.override.json
 node_modules/
+blueprint-tmp.json
+blueprint-old.json
+blueprint-new.json

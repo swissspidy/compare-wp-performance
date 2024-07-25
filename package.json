@@ -17,8 +17,9 @@
 		"@wordpress/scripts": "^26.8.0"
 	},
 	"dependencies": {
-		"csvtojson": "^2.0.10",
+		"@wp-playground/cli": "^0.9.26",
 		"csv-stringify": "^6.4.0",
+		"csvtojson": "^2.0.10",
 		"tablemark": "^3.0.0"
 	},
 	"scripts": {
