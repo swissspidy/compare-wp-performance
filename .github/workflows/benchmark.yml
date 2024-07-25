@@ -4,14 +4,14 @@ on:
   workflow_dispatch:
     inputs:
       old:
-        description: "Old version to compare"
+        description: "Old version to compare (e.g. '6.5', 'latest', 'beta', 'nightly', or ZIP URL)"
         type: string
         default: "latest"
         required: true
       new:
-        description: "New version to compare"
+        description: "New version to compare (e.g. '6.5', 'latest', 'beta', 'nightly', or ZIP URL)"
         type: string
-        default: "trunk"
+        default: "nightly"
         required: true
       theme:
         description: "Theme to test"
@@ -20,12 +20,8 @@ on:
         - twentytwentyone
         - twentytwentythree
         - twentytwentyfour
+        default: "twentytwentyone"
         required: true
-      memcached:
-        description: 'Whether to test with memcached enabled'
-        type: 'boolean'
-        default: false
-        required: false
       locale:
         description: 'Locale to use'
         type: 'string'
@@ -55,102 +51,121 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Install wp-env
-        run: npm -g i @wordpress/env
-
       - name: Install wpp-research dependencies
         working-directory: wpp-research
         run: npm ci
 
-      - name: Configure WordPress versions
+      - name: Run tests
         run: |
+          OLD_ARGS=()
+          OLD_ARGS+=("--mount=./wp-content/mu-plugins:/wordpress/wp-content/mu-plugins")
+          OLD_ARGS+=(--blueprint=./blueprint-old.json)
+
+          cp blueprint.json blueprint-shared.json
+
+          jq --argjson step "{ \"step\": \"installTheme\", \"themeZipFile\": { \"resource\": \"wordpress.org/themes\", \"slug\": \"$THEME\" }, \"options\": { \"activate\": true, \"importStarterContent\": false } }" '.steps += [$step]' blueprint-shared.json > blueprint-tmp.json
+          mv blueprint-tmp.json blueprint-shared.json
+
+          if [[ $WP_LOCALE != 'en_US' ]]; then
+            jq --argjson step "{ \"step\": \"setSiteLanguage\", \"language\": \"$WP_LOCALE\" }" '.steps += [$step]' blueprint-shared.json > blueprint-tmp.json
+            mv blueprint-tmp.json blueprint-shared.json
+          fi;
+
+          echo "::group::Prepare blueprint for old version"
+
           echo "Old version: $OLD_VERSION"
+
+          cp blueprint-shared.json blueprint-old.json
+
           if [[ $OLD_VERSION != 'latest' ]]; then
             if [[ "$OLD_VERSION" == *".zip"* ]]; then
-              echo "{\"core\":\"$OLD_VERSION\"}" >> old/.wp-env.override.json
+              jq --argjson step "{ \"step\": \"importWordPressFiles\", \"wordPressFilesZip\": { \"resource\": \"url\", \"url\": \"$OLD_VERSION\" } }" '.steps += [$step]' blueprint-old.json > blueprint-tmp.json
+              mv blueprint-tmp.json blueprint-old.json
             else
-              echo "{\"core\":\"WordPress/WordPress#$OLD_VERSION\"}" >> old/.wp-env.override.json
+              OLD_ARGS+=(--wp=$OLD_VERSION)
             fi
           fi
 
+          echo "Final blueprint:"
+          cat ./blueprint-old.json | jq '.'
+
+          echo "::endgroup::"
+
+          echo "::group::Start Playground server"
+
+          ./node_modules/@wp-playground/cli/wp-playground.js server "${OLD_ARGS[@]}" &
+
+          bash -c 'echo -n "Waiting port 9400 .."; for _ in `seq 1 400`; do echo -n .; sleep 0.25; curl --fail -LI http://localhost:9400 -o /dev/null -w '%{http_code}\n' -s > /dev/null && echo " Open." && exit ; done; echo " Timeout!" >&2; exit 1'
+
+          # The port being open does not mean the blueprint has already finished. Wait a little bit longer.
+          sleep 15
+
+          echo "::endgroup::"
+
+          echo "::group::Run tests for old version"
+
+          npm run --prefix wpp-research research --silent -- benchmark-web-vitals -u http://localhost:9400/ -n 100 -p -v -o csv > before_cwv.csv
+          npm run --prefix wpp-research research --silent -- benchmark-server-timing -u http://localhost:9400/ -n 100 -p -v -o csv > before_st.csv
+
+          # Stop Playground server again
+          npx --yes kill-port 9400
+
+          echo "::endgroup::"
+
+          NEW_ARGS=()
+          NEW_ARGS+=("--mount=./wp-content/mu-plugins:/wordpress/wp-content/mu-plugins")
+          NEW_ARGS+=(--blueprint=./blueprint-new.json)
+
+          echo "::group::Prepare blueprint for new version"
+
           echo "New version: $NEW_VERSION"
+
+          cp blueprint-shared.json blueprint-new.json
+
           if [[ "$NEW_VERSION" == *".zip"* ]]; then
-            echo "{\"core\":\"$NEW_VERSION\"}" >> new/.wp-env.override.json
+            jq --argjson step "{ \"step\": \"importWordPressFiles\", \"wordPressFilesZip\": { \"resource\": \"url\", \"url\": \"$NEW_VERSION\" } }" '.steps += [$step]' blueprint-new.json > tee blueprint-tmp.json
+            mv blueprint-tmp.json blueprint-new.json
           else
-            echo "{\"core\":\"WordPress/WordPress#$NEW_VERSION\"}" >> new/.wp-env.override.json
+             NEW_ARGS+=(--wp=$NEW_VERSION)
           fi
+
+          echo "Final blueprint:"
+          cat ./blueprint-new.json | jq '.'
+
+          echo "::endgroup::"
+
+          echo "::group::Start Playground server"
+
+          ./node_modules/@wp-playground/cli/wp-playground.js server "${NEW_ARGS[@]}" &
+
+          bash -c 'echo -n "Waiting port 9400 .."; for _ in `seq 1 400`; do echo -n .; sleep 0.25; curl --fail -LI http://localhost:9400 -o /dev/null -w '%{http_code}\n' -s > /dev/null && echo " Open." && exit ; done; echo " Timeout!" >&2; exit 1'
+
+          # The port being open does not mean the blueprint has already finished. Wait a little bit longer.
+          sleep 15
+
+          echo "::endgroup::"
+
+          echo "::group::Run tests for new version"
+
+          npm run --prefix wpp-research research --silent -- benchmark-web-vitals -u http://localhost:9400/ -n 100 -p -v -o csv > after_cwv.csv
+          npm run --prefix wpp-research research --silent -- benchmark-server-timing -u http://localhost:9400/ -n 100 -p -v -o csv > after_st.csv
+
+          echo "::endgroup::"
+
+          # Stop Playground server again
+          npx --yes kill-port 9400
+
+          echo "::group::Summarizing results"
+
+          node ./scripts/results.js "Server-Timing ($THEME)" before_cwv.csv after_cwv.csv > summary.md
+          cat summary.md >> $GITHUB_STEP_SUMMARY
+
+          node ./scripts/results.js "Web Vitals ($THEME)" before_st.csv after_st.csv > summary.md
+          cat summary.md >> $GITHUB_STEP_SUMMARY
+
+          echo "::endgroup::"
         env:
           OLD_VERSION: ${{ inputs.old == 'trunk' && 'master' || inputs.old }}
           NEW_VERSION: ${{ inputs.new == 'trunk' && 'master' || inputs.new }}
-
-      - name: Install WordPress
-        run: |
-          chmod -R 767 old/ # TODO: Possibly integrate in wp-env
-          chmod -R 767 new/ # TODO: Possibly integrate in wp-env
-          (cd old && wp-env start)
-          (cd new && wp-env start)
-        env:
-          LOCAL_PHP_MEMCACHED: ${{ inputs.memcached }}
-
-      - name: Install additional languages
-        run: |
-          (cd old && wp-env run tests-cli wp language core install ${{ inputs.locale }})
-          (cd old && wp-env run tests-cli wp language plugin install ${{ inputs.locale }} -- --all)
-          (cd old && wp-env run tests-cli wp language theme install ${{ inputs.locale }} -- --all)
-          (cd old && wp-env run tests-cli wp site switch-language ${{ inputs.locale }})
-          (cd new && wp-env run tests-cli wp language core install ${{ inputs.locale }})
-          (cd new && wp-env run tests-cli wp language plugin install ${{ inputs.locale }} -- --all)
-          (cd new && wp-env run tests-cli wp language theme install ${{ inputs.locale }} -- --all)
-          (cd new && wp-env run tests-cli wp site switch-language ${{ inputs.locale }})
-        if: ${{ inputs.locale != 'en_US' }}
-
-      - name: Update permalink structure
-        run: |
-          (cd old && wp-env run tests-cli wp rewrite structure '/%postname%/' -- --hard)
-          (cd new && wp-env run tests-cli wp rewrite structure '/%postname%/' -- --hard)
-
-      - name: Import mock data
-        run: |
-          (cd old && wp-env run tests-cli curl https://raw.githubusercontent.com/WordPress/theme-test-data/b9752e0533a5acbb876951a8cbb5bcc69a56474c/themeunittestdata.wordpress.xml -- --output /tmp/themeunittestdata.wordpress.xml)
-          (cd old && wp-env run tests-cli wp import /tmp/themeunittestdata.wordpress.xml -- --authors=create)
-          (cd new && wp-env run tests-cli curl https://raw.githubusercontent.com/WordPress/theme-test-data/b9752e0533a5acbb876951a8cbb5bcc69a56474c/themeunittestdata.wordpress.xml -- --output /tmp/themeunittestdata.wordpress.xml)
-          (cd new && wp-env run tests-cli wp import /tmp/themeunittestdata.wordpress.xml -- --authors=create)
-
-      - name: Deactivate WordPress Importer
-        run: |
-          (cd old && wp-env run tests-cli wp plugin deactivate wordpress-importer)
-          (cd new && wp-env run tests-cli wp plugin deactivate wordpress-importer)
-
-      - name: Post Debugging Info
-        run: |
-          echo "Old version – Theme info"
-          (cd old && npm run wp-env run tests-cli wp theme list)
-          echo "New version – Theme info"
-          (cd new && npm run wp-env run tests-cli wp theme list)
-
-      - name: Install theme
-        run: |
-          (cd old && wp-env run tests-cli wp theme activate $THEME)
-          (cd new && wp-env run tests-cli wp theme activate $THEME)
-        env:
           THEME: ${{ inputs.theme }}
-
-      - name: Benchmark Web Vitals
-        working-directory: wpp-research
-        run: |
-          npm run research --silent -- benchmark-web-vitals -u http://localhost:8881/ -n 100 -p -v -o csv > before.csv
-          npm run research --silent -- benchmark-web-vitals -u http://localhost:8891/ -n 100 -p -v -o csv > after.csv
-          node ../scripts/results.js "Web Vitals ($THEME)" before.csv after.csv > summary.md
-          cat summary.md >> $GITHUB_STEP_SUMMARY
-        env:
-          THEME: ${{ inputs.theme }}
-
-      - name: Benchmark Server-Timing
-        working-directory: wpp-research
-        run: |
-          npm run research --silent -- benchmark-server-timing -u http://localhost:8881/ -n 100 -p -v -o csv > before.csv
-          npm run research --silent -- benchmark-server-timing -u http://localhost:8891/ -n 100 -p -v -o csv > after.csv
-          node ../scripts/results.js "Server-Timing ($THEME)" before.csv after.csv > summary.md
-          cat summary.md >> $GITHUB_STEP_SUMMARY
-        env:
-          THEME: ${{ inputs.theme }}
+          WP_LOCALE: ${{ inputs.locale }}

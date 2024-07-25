@@ -1,0 +1,38 @@
+
+{
+  "$schema": "https://playground.wordpress.net/blueprint-schema.json",
+  "landingPage": "/wp-admin/",
+  "preferredVersions": {
+	"php": "8.0",
+	"wp": "latest"
+  },
+  "phpExtensionBundles": [
+	"kitchen-sink"
+  ],
+  "features": {
+	"networking": false
+  },
+  "plugins": [
+	"performance-lab"
+  ],
+  "constants": {
+	"WP_HTTP_BLOCK_EXTERNAL": "true",
+	"WP_DEBUG": "false",
+	"SCRIPT_DEBUG": "false",
+	"SAVEQUERIES": "false",
+	"DISABLE_WP_CRON": "true"
+  },
+  "login": true,
+  "siteOptions": {
+	"permalink_structure": "/%postname%/"
+  },
+  "steps": [
+	{
+	  "step": "importWxr",
+	  "file": {
+		"resource": "url",
+		"url": "https://raw.githubusercontent.com/WordPress/theme-test-data/b47acf980696897936265182cb684dca648476c7/themeunittestdata.wordpress.xml"
+	  }
+	}
+  ]
+}
