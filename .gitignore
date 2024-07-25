@@ -1,5 +1,6 @@
 wpp-research/
 node_modules/
+blueprint-shared.json
 blueprint-tmp.json
 blueprint-old.json
 blueprint-new.json

@@ -63,10 +63,14 @@ jobs:
 
           echo "::group::Prepare shared blueprint"
 
-          jq --argjson step "{ \"step\": \"installTheme\", \"themeZipFile\": { \"resource\": \"wordpress.org/themes\", \"slug\": \"$THEME\" }, \"options\": { \"activate\": true, \"importStarterContent\": false } }" '.steps += [$step]' blueprint.json > blueprint-tmp.json
+          cp blueprint.json blueprint-shared.json
 
-          if [[ $LOCALE != 'en_US' ]]; then
-            jq --argjson step "{ \"steps\": [ { \"step\": \"setSiteLanguage\", \"language\": \"$LOCALE\" } ] }" '.steps += [$step]' blueprint-tmp.json > blueprint-tmp.json
+          jq --argjson step "{ \"step\": \"installTheme\", \"themeZipFile\": { \"resource\": \"wordpress.org/themes\", \"slug\": \"$THEME\" }, \"options\": { \"activate\": true, \"importStarterContent\": false } }" '.steps += [$step]' blueprint-shared.json > blueprint-tmp.json
+          mv blueprint-tmp.json blueprint-shared.json
+
+          if [[ $WP_LOCALE != 'en_US' ]]; then
+            jq --argjson step "{ \"step\": \"setSiteLanguage\", \"language\": \"$WP_LOCALE\" }" '.steps += [$step]' blueprint-shared.json > blueprint-tmp.json
+            mv blueprint-tmp.json blueprint-shared.json
           fi;
 
           echo "::endgroup::"
@@ -75,11 +79,12 @@ jobs:
 
           echo "Old version: $OLD_VERSION"
 
-          cp blueprint-tmp.json blueprint-old.json
+          cp blueprint-shared.json blueprint-old.json
 
           if [[ $OLD_VERSION != 'latest' ]]; then
             if [[ "$OLD_VERSION" == *".zip"* ]]; then
-              jq --argjson step "{ \"step\": \"importWordPressFiles\", \"wordPressFilesZip\": { \"resource\": \"url\", \"url\": \"$OLD_VERSION\" } }" '.steps += [$step]' blueprint-old.json > blueprint-old.json
+              jq --argjson step "{ \"step\": \"importWordPressFiles\", \"wordPressFilesZip\": { \"resource\": \"url\", \"url\": \"$OLD_VERSION\" } }" '.steps += [$step]' blueprint-old.json > blueprint-tmp.json
+              mv blueprint-tmp.json blueprint-old.json
             else
               OLD_ARGS+=(--wp=$OLD_VERSION)
             fi
@@ -112,10 +117,11 @@ jobs:
 
           echo "New version: $NEW_VERSION"
 
-          cp blueprint-tmp.json blueprint-new.json
+          cp blueprint-shared.json blueprint-new.json
 
           if [[ "$NEW_VERSION" == *".zip"* ]]; then
-            jq --argjson step "{ \"step\": \"importWordPressFiles\", \"wordPressFilesZip\": { \"resource\": \"url\", \"url\": \"$NEW_VERSION\" } }" '.steps += [$step]' blueprint-new.json > blueprint-new.json
+            jq --argjson step "{ \"step\": \"importWordPressFiles\", \"wordPressFilesZip\": { \"resource\": \"url\", \"url\": \"$NEW_VERSION\" } }" '.steps += [$step]' blueprint-new.json > tee blueprint-tmp.json
+            mv blueprint-tmp.json blueprint-new.json
           else
              NEW_ARGS+=(--wp=$NEW_VERSION)
           fi
@@ -152,4 +158,4 @@ jobs:
           OLD_VERSION: ${{ inputs.old == 'trunk' && 'master' || inputs.old }}
           NEW_VERSION: ${{ inputs.new == 'trunk' && 'master' || inputs.new }}
           THEME: ${{ inputs.theme }}
-          LOCALE: ${{ inputs.locale }}
+          WP_LOCALE: ${{ inputs.locale }}

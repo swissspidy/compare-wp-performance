@@ -21,7 +21,6 @@
 	"SCRIPT_DEBUG": "false",
 	"SAVEQUERIES": "false",
 	"DISABLE_WP_CRON": "true"
-
   },
   "login": true,
   "siteOptions": {
