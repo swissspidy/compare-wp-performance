@@ -108,8 +108,8 @@ jobs:
 
           echo "::group::Run tests for old version"
 
-          npm run research --silent -- benchmark-web-vitals -u http://localhost:8881/ -n 100 -p -v -o csv > before_cwv.csv
-          npm run research --silent -- benchmark-server-timing -u http://localhost:8881/ -n 100 -p -v -o csv > before_st.csv
+          npm run research --silent -- benchmark-web-vitals -u http://localhost:9400/ -n 100 -p -v -o csv > before_cwv.csv
+          npm run research --silent -- benchmark-server-timing -u http://localhost:9400/ -n 100 -p -v -o csv > before_st.csv
 
           echo "::endgroup::"
 
@@ -151,8 +151,8 @@ jobs:
 
           echo "::group::Run tests for new version"
 
-          npm run research --silent -- benchmark-web-vitals -u http://localhost:8891/ -n 100 -p -v -o csv > after_cwv.csv
-          npm run research --silent -- benchmark-server-timing -u http://localhost:8891/ -n 100 -p -v -o csv > after_st.csv
+          npm run research --silent -- benchmark-web-vitals -u http://localhost:9400/ -n 100 -p -v -o csv > after_cwv.csv
+          npm run research --silent -- benchmark-server-timing -u http://localhost:9400/ -n 100 -p -v -o csv > after_st.csv
 
           echo "::endgroup::"
 
