@@ -96,7 +96,14 @@ jobs:
           echo "::endgroup::"
 
           echo "::group::Start Playground server"
+
           ./node_modules/@wp-playground/cli/wp-playground.js server "${OLD_ARGS[@]}" &
+
+          bash -c 'echo -n "Waiting port 9400 .."; for _ in `seq 1 400`; do echo -n .; sleep 0.25; curl --fail -LI http://localhost:9400 -o /dev/null -w '%{http_code}\n' -s > /dev/null && echo " Open." && exit ; done; echo " Timeout!" >&2; exit 1'
+
+          # The port being open does not mean the blueprint has already finished. Wait a little bit longer.
+          sleep 15
+
           echo "::endgroup::"
 
           echo "::group::Run tests for old version"
@@ -132,7 +139,14 @@ jobs:
           echo "::endgroup::"
 
           echo "::group::Start Playground server"
+
           ./node_modules/@wp-playground/cli/wp-playground.js server "${NEW_ARGS[@]}" &
+
+          bash -c 'echo -n "Waiting port 9400 .."; for _ in `seq 1 400`; do echo -n .; sleep 0.25; curl --fail -LI http://localhost:9400 -o /dev/null -w '%{http_code}\n' -s > /dev/null && echo " Open." && exit ; done; echo " Timeout!" >&2; exit 1'
+
+          # The port being open does not mean the blueprint has already finished. Wait a little bit longer.
+          sleep 15
+
           echo "::endgroup::"
 
           echo "::group::Run tests for new version"
