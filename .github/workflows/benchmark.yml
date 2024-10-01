@@ -20,6 +20,7 @@ on:
         - twentytwentyone
         - twentytwentythree
         - twentytwentyfour
+        - twentytwentyfive
         required: true
       memcached:
         description: 'Whether to test with memcached enabled'
