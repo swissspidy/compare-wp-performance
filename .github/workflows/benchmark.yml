@@ -25,6 +25,7 @@ on:
         - twentytwentyone
         - twentytwentythree
         - twentytwentyfour
+        - twentytwentyfive
         required: true
       memcached:
         description: 'Memcached enabled'
