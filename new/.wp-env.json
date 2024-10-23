@@ -4,12 +4,12 @@
 	"testsPort": 8891,
 	"plugins": [
 		"https://downloads.wordpress.org/plugin/wordpress-importer.zip",
-		"https://downloads.wordpress.org/plugin/performance-lab.2.6.1.zip"
+		"https://downloads.wordpress.org/plugin/performance-lab.3.5.1.zip"
 	],
 	"themes": [
 		"https://downloads.wordpress.org/theme/twentytwentyone.zip",
 		"https://downloads.wordpress.org/theme/twentytwentythree.zip",
-		"WordPress/twentytwentyfour"
+		"https://downloads.wordpress.org/theme/twentytwentyfour.zip"
 	],
 	"mappings": {
 		"wp-cli.yml": "../shared/wp-cli.yml",
