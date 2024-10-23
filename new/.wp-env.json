@@ -3,8 +3,8 @@
 	"port": 8890,
 	"testsPort": 8891,
 	"plugins": [
-		"https://downloads.wordpress.org/plugin/wordpress-importer.zip",
-		"https://downloads.wordpress.org/plugin/performance-lab.3.5.1.zip"
+		"https://downloads.wordpress.org/plugin/wordpress-importer.latest-stable.zip",
+		"https://downloads.wordpress.org/plugin/performance-lab.latest-stable.zip"
 	],
 	"themes": [
 		"https://downloads.wordpress.org/theme/twentytwentyone.zip",
