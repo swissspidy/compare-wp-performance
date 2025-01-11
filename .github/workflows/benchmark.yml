@@ -3,6 +3,11 @@ name: Benchmark
 on:
   workflow_dispatch:
     inputs:
+      title:
+        description: "A title for this comparison run"
+        type: string
+        default: ""
+        required: false
       old:
         description: "Old version to compare"
         type: string
@@ -23,7 +28,7 @@ on:
         - twentytwentyfive
         required: true
       memcached:
-        description: 'Whether to test with memcached enabled'
+        description: 'Memcached enabled'
         type: 'boolean'
         default: false
         required: false
@@ -141,17 +146,25 @@ jobs:
         run: |
           npm run research --silent -- benchmark-web-vitals -u http://localhost:8881/ -n 100 -p -v -o csv > before.csv
           npm run research --silent -- benchmark-web-vitals -u http://localhost:8891/ -n 100 -p -v -o csv > after.csv
-          node ../scripts/results.js "Web Vitals ($THEME)" before.csv after.csv > summary.md
+          node ../scripts/results.js "Web Vitals $TITLE (Theme: $THEME | Old version: $OLD_VERSION | New Version: $NEW_VERSION | memcached: $MEMCACHED)" before.csv after.csv > summary.md
           cat summary.md >> $GITHUB_STEP_SUMMARY
         env:
           THEME: ${{ inputs.theme }}
+          MEMCACHED: ${{ inputs.memcached }}
+          OLD_VERSION: ${{ inputs.old == 'trunk' && 'master' || inputs.old }}
+          NEW_VERSION: ${{ inputs.new == 'trunk' && 'master' || inputs.new }}
+          TITLE: ${{ inputs.title }}
 
       - name: Benchmark Server-Timing
         working-directory: wpp-research
         run: |
           npm run research --silent -- benchmark-server-timing -u http://localhost:8881/ -n 100 -p -v -o csv > before.csv
           npm run research --silent -- benchmark-server-timing -u http://localhost:8891/ -n 100 -p -v -o csv > after.csv
-          node ../scripts/results.js "Server-Timing ($THEME)" before.csv after.csv > summary.md
+          node ../scripts/results.js "Server timing: $TITLE (Theme: $THEME | Old version: $OLD_VERSION | New Version: $NEW_VERSION | memcached: $MEMCACHED)" before.csv after.csv > summary.md
           cat summary.md >> $GITHUB_STEP_SUMMARY
         env:
           THEME: ${{ inputs.theme }}
+          MEMCACHED: ${{ inputs.memcached }}
+          OLD_VERSION: ${{ inputs.old == 'trunk' && 'master' || inputs.old }}
+          NEW_VERSION: ${{ inputs.new == 'trunk' && 'master' || inputs.new }}
+          TITLE: ${{ inputs.title }}
