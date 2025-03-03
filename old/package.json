@@ -14,7 +14,7 @@
 	"homepage": "https://github.com/swissspidy/compare-wp-performance#readme",
 	"type": "module",
 	"devDependencies": {
-		"@wordpress/env": "^10.18.0"
+		"@wordpress/env": "^10.19.0"
 	},
 	"scripts": {
 		"wp-env": "wp-env"
