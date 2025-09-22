@@ -19,7 +19,7 @@
 	"dependencies": {
 		"csvtojson": "^2.0.10",
 		"csv-stringify": "^6.6.0",
-		"tablemark": "^4.0.0"
+		"tablemark": "^4.1.0"
 	},
 	"scripts": {
 		"lint": "wp-scripts lint-js",
