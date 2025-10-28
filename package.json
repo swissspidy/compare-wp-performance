@@ -17,7 +17,7 @@
 		"@wordpress/scripts": "^30.24.0"
 	},
 	"dependencies": {
-		"csvtojson": "^2.0.10",
+		"csvtojson": "^2.0.13",
 		"csv-stringify": "^6.6.0",
 		"tablemark": "^4.1.0"
 	},
