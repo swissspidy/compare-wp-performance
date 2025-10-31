@@ -150,12 +150,14 @@ jobs:
         run: echo 0 | sudo tee /proc/sys/kernel/apparmor_restrict_unprivileged_userns
 
       - name: Benchmark Web Vitals
+        id: web-vitals
         working-directory: wpp-research
         run: |
           npm run research --silent -- benchmark-web-vitals -u http://localhost:8881/ -n 100 -c "broadband" -w 1280x720 -p -v -o csv > before.csv
           npm run research --silent -- benchmark-web-vitals -u http://localhost:8891/ -n 100 -c "broadband" -w 1280x720 -p -v -o csv > after.csv
           node ../scripts/results.js "Web Vitals $TITLE (Theme: $THEME | Old version: $OLD_VERSION | New Version: $NEW_VERSION | memcached: $MEMCACHED)" before.csv after.csv > summary.md
           cat summary.md >> $GITHUB_STEP_SUMMARY
+          echo "summary='$(cat summary.md)'" >> "$GITHUB_OUTPUT"
         env:
           THEME: ${{ inputs.theme }}
           MEMCACHED: ${{ inputs.memcached }}
@@ -164,25 +166,20 @@ jobs:
           TITLE: ${{ inputs.title }}
 
       - name: Benchmark Server-Timing
+        id: server-timing
         working-directory: wpp-research
         run: |
           npm run research --silent -- benchmark-server-timing -u http://localhost:8881/ -n 100 -p -v -o csv > before.csv
           npm run research --silent -- benchmark-server-timing -u http://localhost:8891/ -n 100 -p -v -o csv > after.csv
           node ../scripts/results.js "Server timing: $TITLE (Theme: $THEME | Old version: $OLD_VERSION | New Version: $NEW_VERSION | memcached: $MEMCACHED)" before.csv after.csv > summary.md
           cat summary.md >> $GITHUB_STEP_SUMMARY
+          echo "summary='$(cat summary.md)'" >> "$GITHUB_OUTPUT"
         env:
           THEME: ${{ inputs.theme }}
           MEMCACHED: ${{ inputs.memcached }}
           OLD_VERSION: ${{ inputs.old == 'trunk' && 'master' || inputs.old }}
           NEW_VERSION: ${{ inputs.new == 'trunk' && 'master' || inputs.new }}
           TITLE: ${{ inputs.title }}
-
-      - name: Read benchmark summary
-        id: read-summary
-        run: |
-          echo "summary<<EOF" >> $GITHUB_OUTPUT
-          cat $GITHUB_STEP_SUMMARY >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
 
       - name: AI Summary for Non-Technical Users
         id: ai-summary
@@ -199,15 +196,20 @@ jobs:
 
             Here are the benchmark results:
 
-            ${{ steps.read-summary.outputs.summary }}
+            Core Web Vitals:
+
+            ${{ steps.web-vitals.outputs.summary }}
+
+            Server Timing:
+
+            ${{ steps.server-timing.outputs.summary }}
 
             Please explain:
-            1. What these benchmarks measure (in simple terms)
-            2. Whether the new version is faster or slower than the old version
-            3. How significant the performance differences are
-            4. What this means for everyday WordPress users
+            1. Whether the new version is faster or slower than the old version
+            2. How significant the performance differences are
+            3. What this means for everyday WordPress users
 
-            Use simple language without technical jargon. If a metric shows improvement, clearly state that. If it shows regression, explain that too.
+            Use simple language without technical jargon. If a metric shows improvement, clearly state that. If it shows regression, explain that too. Keep it concise.
 
       - name: Add AI summary to step summary
         run: |
