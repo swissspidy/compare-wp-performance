@@ -174,7 +174,15 @@ jobs:
           NEW_VERSION: ${{ inputs.new == 'trunk' && 'master' || inputs.new }}
           TITLE: ${{ inputs.title }}
 
+      - name: Read benchmark summary
+        id: read-summary
+        run: |
+          echo "summary<<EOF" >> $GITHUB_OUTPUT
+          cat $GITHUB_STEP_SUMMARY >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
       - name: AI Summary for Non-Technical Users
+        id: ai-summary
         uses: actions/ai-inference@v1
         with:
           prompt: |
@@ -186,6 +194,10 @@ jobs:
             - Theme: ${{ inputs.theme }}
             - Memcached: ${{ inputs.memcached }}
             
+            Here are the benchmark results:
+            
+            ${{ steps.read-summary.outputs.summary }}
+            
             Please explain:
             1. What these benchmarks measure (in simple terms)
             2. Whether the new version is faster or slower than the old version
@@ -193,4 +205,12 @@ jobs:
             4. What this means for everyday WordPress users
             
             Use simple language without technical jargon. If a metric shows improvement, clearly state that. If it shows regression, explain that too.
-          input-file: ${{ env.GITHUB_STEP_SUMMARY }}
+
+      - name: Add AI summary to step summary
+        run: |
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "---" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## 🤖 AI Summary for Non-Technical Users" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "${{ steps.ai-summary.outputs.response }}" >> $GITHUB_STEP_SUMMARY
