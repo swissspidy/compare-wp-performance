@@ -155,9 +155,13 @@ jobs:
         run: |
           npm run research --silent -- benchmark-web-vitals -u http://localhost:8881/ -n 100 -c "broadband" -w 1280x720 -p -v -o csv > before.csv
           npm run research --silent -- benchmark-web-vitals -u http://localhost:8891/ -n 100 -c "broadband" -w 1280x720 -p -v -o csv > after.csv
-          node ../scripts/results.js "Web Vitals $TITLE (Theme: $THEME | Old version: $OLD_VERSION | New Version: $NEW_VERSION | memcached: $MEMCACHED)" before.csv after.csv > summary.md
-          cat summary.md >> $GITHUB_STEP_SUMMARY
-          echo "summary='$(cat summary.md)'" >> "$GITHUB_OUTPUT"
+          SUMMARY=$(cat summary.md)
+          echo "$SUMMARY" >> "$GITHUB_STEP_SUMMARY"
+          {
+            echo 'SUMMARY<<EOF'
+            echo "$SUMMARY"
+            echo EOF
+          } >> "$GITHUB_OUTPUT"
         env:
           THEME: ${{ inputs.theme }}
           MEMCACHED: ${{ inputs.memcached }}
@@ -172,8 +176,13 @@ jobs:
           npm run research --silent -- benchmark-server-timing -u http://localhost:8881/ -n 100 -p -v -o csv > before.csv
           npm run research --silent -- benchmark-server-timing -u http://localhost:8891/ -n 100 -p -v -o csv > after.csv
           node ../scripts/results.js "Server timing: $TITLE (Theme: $THEME | Old version: $OLD_VERSION | New Version: $NEW_VERSION | memcached: $MEMCACHED)" before.csv after.csv > summary.md
-          cat summary.md >> $GITHUB_STEP_SUMMARY
-          echo "summary='$(cat summary.md)'" >> "$GITHUB_OUTPUT"
+          SUMMARY=$(cat summary.md)
+          echo "$SUMMARY" >> "$GITHUB_STEP_SUMMARY"
+          {
+            echo 'SUMMARY<<EOF'
+            echo "$SUMMARY"
+            echo EOF
+          } >> "$GITHUB_OUTPUT"
         env:
           THEME: ${{ inputs.theme }}
           MEMCACHED: ${{ inputs.memcached }}
