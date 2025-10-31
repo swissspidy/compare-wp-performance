@@ -2,7 +2,7 @@
 
 import { existsSync } from 'node:fs';
 import csv from 'csvtojson';
-import tablemark from 'tablemark';
+import { tablemark } from 'tablemark';
 import { stringify } from 'csv-stringify/sync';
 
 const args = process.argv.slice( 2 );
