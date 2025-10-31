@@ -38,6 +38,9 @@ on:
         default: 'en_US'
         required: false
 
+permissions:
+  models: read
+
 jobs:
   benchmarks:
     name: "Benchmarks"
@@ -187,23 +190,23 @@ jobs:
         with:
           prompt: |
             Please analyze the following WordPress performance benchmark results and provide a clear, easy-to-understand summary for non-technical users.
-            
+
             The benchmark compares two WordPress versions:
             - Old version: ${{ inputs.old == 'trunk' && 'master' || inputs.old }}
             - New version: ${{ inputs.new == 'trunk' && 'master' || inputs.new }}
             - Theme: ${{ inputs.theme }}
             - Memcached: ${{ inputs.memcached }}
-            
+
             Here are the benchmark results:
-            
+
             ${{ steps.read-summary.outputs.summary }}
-            
+
             Please explain:
             1. What these benchmarks measure (in simple terms)
             2. Whether the new version is faster or slower than the old version
             3. How significant the performance differences are
             4. What this means for everyday WordPress users
-            
+
             Use simple language without technical jargon. If a metric shows improvement, clearly state that. If it shows regression, explain that too.
 
       - name: Add AI summary to step summary
