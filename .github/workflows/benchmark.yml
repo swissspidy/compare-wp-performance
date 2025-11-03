@@ -193,7 +193,7 @@ jobs:
 
       - name: AI Summary for Non-Technical Users
         id: ai-summary
-        uses: actions/ai-inference@v1
+        uses: actions/ai-inference@v2
         with:
           prompt: |
             Please analyze the following WordPress performance benchmark results and provide a clear, easy-to-understand summary for non-technical users.
