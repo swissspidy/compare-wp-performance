@@ -186,8 +186,13 @@ jobs:
           NEW_VERSION: ${{ inputs.new == 'trunk' && 'master' || inputs.new }}
           TITLE: ${{ inputs.title }}
 
+      - name: Install Copilot CLI
+        run: npm install -g @github/copilot
+
       - name: AI Summary for Non-Technical Users
         id: ai-summary
+        env:
+          COPILOT_GITHUB_TOKEN: ${{ secrets.COPILOT_GITHUB_TOKEN }}
         uses: actions/ai-inference@v3
         with:
           prompt: |
