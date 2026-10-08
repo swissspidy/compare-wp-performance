@@ -1,5 +1,21 @@
 #!/usr/bin/env bash
 
+run_old_new() {
+	local FN="$1"
+
+	if [[ "$(type -t "$FN")" != 'function' ]]; then
+ 		exit 11
+	fi
+ 
+	cd old/
+	"$FN"
+ 	cd -
+  
+	cd new/
+	"$FN"
+	cd -
+}
+
 # Install wpp-research if missing
 
 if [ ! -d "./wpp-research" ]; then
@@ -48,15 +64,16 @@ fi
 
 if [[ $SKIP_INIT != 'true' ]]; then
 
-	# Install WordPress
+	install_wordpress() {
+		npm i
+		npm run wp-env --silent start
+	}
+	run_old_new install_wordpress
 
-	(cd old && npm i && npm run wp-env --silent start)
-	(cd new && npm i && npm run wp-env --silent start)
-
-	# Update permalink structure
-
-	(cd old && npm run wp-env --silent run tests-cli wp rewrite structure '/%postname%/' -- --hard)
-	(cd new && npm run wp-env --silent run tests-cli wp rewrite structure '/%postname%/' -- --hard)
+	update_permalink_structure() {
+		npm run wp-env --silent run tests-cli wp rewrite structure '/%postname%/' -- --hard
+  	}
+	run_old_new update_permalink_structure
 
 	# Delete any data that might already exist by re-installing WordPress.
 	# Prevents mock data from being duplicated on subsequent runs.
