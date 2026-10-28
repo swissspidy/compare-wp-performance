@@ -106,8 +106,8 @@ cd ./wpp-research || exit
 
 # Benchmark Web Vitals
 
-npm run research --silent -- benchmark-web-vitals -u http://localhost:8881/ -n 20 -p -o csv > before.csv
-npm run research --silent -- benchmark-web-vitals -u http://localhost:8891/ -n 20 -p -o csv > after.csv
+npm run research --silent -- benchmark-web-vitals -u http://localhost:8881/ -n 20 -c "Fast 4G" -p -o csv > before.csv
+npm run research --silent -- benchmark-web-vitals -u http://localhost:8891/ -n 20 -c "Fast 4G" -p -o csv > after.csv
 if [[ $PRINT_TO_FILES == 'true' ]]; then
 	if [[ $OUTPUT == 'csv' ]]; then
 		node ../scripts/results.js "Web Vitals ($THEME)" before.csv after.csv $OUTPUT $SKIP_FORMATTING > web-vitals-$THEME.csv
