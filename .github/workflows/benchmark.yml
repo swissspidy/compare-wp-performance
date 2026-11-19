@@ -75,7 +75,12 @@ jobs:
 
       - name: Install wpp-research dependencies
         working-directory: wpp-research
-        run: npm ci
+        # Puppeteer's postinstall downloads Chrome, but npm hides any failure
+        # there. Installing Chrome again here is a no-op when it worked, and
+        # fails this step loudly when the cached browser is broken.
+        run: |
+          npm ci
+          npx puppeteer browsers install chrome
 
       - name: Configure WordPress versions
         run: |
