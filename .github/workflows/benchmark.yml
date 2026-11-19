@@ -75,7 +75,12 @@ jobs:
 
       - name: Install wpp-research dependencies
         working-directory: wpp-research
-        run: npm ci
+        # npm 11 skips dependency install scripts that `allowScripts` does not
+        # list, so puppeteer's postinstall never downloads Chrome. Install the
+        # browser explicitly, using the version that this puppeteer expects.
+        run: |
+          npm ci
+          npx puppeteer browsers install chrome
 
       - name: Configure WordPress versions
         run: |
