@@ -51,6 +51,12 @@ jobs:
   benchmarks:
     name: "Benchmarks"
     runs-on: ubuntu-latest
+    env:
+      # The runner ships a `~/.cache/puppeteer/chrome/linux-131.0.6778.204`
+      # folder without the `chrome` binary in it. Puppeteer then refuses to
+      # install Chrome there, and cannot launch it either. A fresh cache
+      # directory avoids that broken folder. Every puppeteer step reads this.
+      PUPPETEER_CACHE_DIR: ${{ github.workspace }}/.puppeteer-cache
     steps:
       - name: Checkout
         uses: actions/checkout@v7
